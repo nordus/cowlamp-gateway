@@ -1,0 +1,29 @@
+{
+  "name": "gateway",
+  "version": "0.0.1",
+  "description": "Decode/ack/persist messages from vehicle telematics devices",
+  "main": "server.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "./bin/test",
+    "start": "./node_modules/forever/bin/forever server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/nordus/gateway.git"
+  },
+  "author": "Daniel Johnson",
+  "license": "BSD",
+  "dependencies": {
+    "mongodb": "~1.2.14",
+    "coffee-script": "~1.6.2"
+  },
+  "devDependencies": {
+    "jasmine-node": "~1.5.0",
+    "cowlamp": "0.0.2",
+    "node-dev": "~2.0.1",
+    "lidoc": "*"
+  }
+}
