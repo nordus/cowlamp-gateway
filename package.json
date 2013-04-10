@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "./bin/test",
-    "start": "./node_modules/forever/bin/forever server.js"
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
