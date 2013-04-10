@@ -10,7 +10,7 @@
 </tr>
 <tr>
 <td>Node Version</td>
-<td>>= 0.8.9</td>
+<td>>= 0.7.0</td>
 </tr>
 <tr>
 <td>Build Status</td>
