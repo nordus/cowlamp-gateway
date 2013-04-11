@@ -1,5 +1,5 @@
 {
-  "name": "gateway",
+  "name": "cowlamp-gateway",
   "version": "0.0.1",
   "description": "Decode/ack/persist messages from vehicle telematics devices",
   "main": "server.js",
@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/nordus/gateway.git"
+    "url": "git://github.com/nordus/cowlamp-gateway.git"
   },
   "author": "Daniel Johnson",
   "license": "BSD",

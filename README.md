@@ -1,8 +1,8 @@
-# gateway
+# cowlamp-gateway
 
 <table>
 <tr> 
-<td>Package</td><td>gateway</td>
+<td>Package</td><td>cowlamp-gateway</td>
 </tr>
 <tr>
 <td>Description</td>
@@ -15,8 +15,8 @@
 <tr>
 <td>Build Status</td>
 <td>
-<a href='https://travis-ci.org/nordus/gateway'>
-<img src='https://secure.travis-ci.org/nordus/gateway.png?branch=master' />
+<a href='https://travis-ci.org/nordus/cowlamp-gateway'>
+<img src='https://secure.travis-ci.org/nordus/cowlamp-gateway.png?branch=master' />
 </a>
 </td>
 </tr>
