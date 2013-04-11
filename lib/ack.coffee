@@ -19,6 +19,6 @@ module.exports = (msg, rinfo) ->
   
   sock = dgram.createSocket 'udp4'
   # send using the same port the original message was sent to
-  sock.bind rinfo.port
+  sock.bind 2013
   sock.send msg, 0, msg.length, rinfo.port, rinfo.address, (err, bytes) ->
     sock.close()
