@@ -1,8 +1,6 @@
 # # Message Type 2
 
 module.exports = (msg) -> {
-  # to milliseconds
-  timeOfFix:  new Date(msg.readUInt32BE(17) * 1000)
   # to decimal
   latitude:   (msg.readInt32BE(21) / 10000000)
   longitude:  (msg.readInt32BE(25) / 10000000)
@@ -15,4 +13,5 @@ module.exports = (msg) -> {
   rssi:       msg.readInt16BE(43)
   # to units of 0.1
   hdop:       (msg.readUInt8(46) / 10)
+  eventCode:  msg.readUInt8(50)
 }
