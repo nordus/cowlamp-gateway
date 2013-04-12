@@ -15,6 +15,6 @@ module.exports = (msg, rinfo) ->
   ]
 
   sock = dgram.createSocket 'udp4'
-  sock.bind 2013, ->
-    sock.send msg, 0, msg.length, rinfo.port, rinfo.address, (err, bytes) ->
-      sock.close()
+  sock.bind 2013
+  sock.send msg, 0, msg.length, rinfo.port, rinfo.address, (err, bytes) ->
+    sock.close()
