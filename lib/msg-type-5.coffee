@@ -3,7 +3,7 @@
 module.exports = (msg) ->
 
   # message type 2 and 5 are same except last few bytes
-  parsed = require('./msg-type-2')(msg)
+  parsed = require('./common-2-and-5')(msg)
   parsed.appMessageType = msg.readUInt16BE(49)
   
   if parsed.appMessageType is 131
