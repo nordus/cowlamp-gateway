@@ -1,6 +1,6 @@
 decodePayload = require '../lib/decode-payload'
-messages = require('../../cowlamp').messages
-decodedMessages = require('../../cowlamp').decodedMessages
+messages = require('cowlamp').messages
+decodedMessages = require('cowlamp').decodedMessages
 
 describe 'decodePayload', ->
   
