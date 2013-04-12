@@ -12,6 +12,6 @@ module.exports = (msg) ->
   
   if parsed.eventCode is 26
     # millivolts to volts
-    parsed.vBatt = (msg.readUInt32(33) * 0.001)
+    parsed.vBatt = (msg.readUInt32BE(33) * 0.001)
   
   return parsed
