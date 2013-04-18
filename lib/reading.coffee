@@ -21,6 +21,10 @@ readingSchema = new Schema
   mobileId: String
 ,
   strict: false
+  toObject:
+    transform: (doc, ret, options) ->
+      delete ret._id
+      ret
 
 readingSchema.virtual('state').get ->
   state(@eventCode)

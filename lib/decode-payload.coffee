@@ -27,7 +27,7 @@ module.exports = (msg, rinfo) ->
 
   # do not ack or save if in development
   if process.env.NODE_ENV is 'test'
-    return reading
+    return reading.toObject()
   else
     ack(msg, rinfo)
     reading.save()
