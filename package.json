@@ -18,7 +18,9 @@
   "license": "BSD",
   "dependencies": {
     "mongodb": "~1.2.14",
-    "coffee-script": "~1.6.2"
+    "coffee-script": "~1.6.2",
+    "underscore": "~1.4.4",
+    "mongoose": "~3.6.5"
   },
   "devDependencies": {
     "jasmine-node": "~1.5.0",

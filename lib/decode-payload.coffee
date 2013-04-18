@@ -1,8 +1,8 @@
 # # Decode Payload
 
 util = require 'util'
-Db = require('mongodb').Db
 ack = require './ack'
+Reading = require './reading'
 
 # parse functions for each message type
 parse =
@@ -17,21 +17,17 @@ module.exports = (msg, rinfo) ->
   common =
     mobileId:   msg.slice(2, 7).toString('hex')
     msgType:    msg.readUInt8 10
-    updateTime: new Date(msg.readUInt32BE(13) * 1000)
+    updateTime: (msg.readUInt32BE(13) * 1000)
 
   # attributes specific to message type
   parsed = parse["#{common.msgType}"](msg)
 
   # merge common and message specific attributes
-  reading = util._extend parsed, common
+  reading = new Reading(util._extend parsed, common)
 
   # do not ack or save if in development
   if process.env.NODE_ENV is 'test'
     return reading
   else
-    ack(msg, rinfo)
-    
-    Db.connect process.env.MONGOHQ_URL, (err, db) ->
-      db.collection 'readings', (err, collection) ->
-        collection.insert reading
-        db.close()
+    #ack(msg, rinfo)
+    reading.save()
