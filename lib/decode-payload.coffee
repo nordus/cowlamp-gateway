@@ -29,5 +29,5 @@ module.exports = (msg, rinfo) ->
   if process.env.NODE_ENV is 'test'
     return reading
   else
-    #ack(msg, rinfo)
+    ack(msg, rinfo)
     reading.save()
