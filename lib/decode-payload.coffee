@@ -2,7 +2,7 @@
 
 util = require 'util'
 ack = require './ack'
-Reading = require './reading'
+Reading = require '../models/reading'
 
 # parse functions for each message type
 parse =
@@ -17,6 +17,7 @@ module.exports = (msg, rinfo) ->
   common =
     mobileId:   msg.slice(2, 7).toString('hex')
     msgType:    msg.readUInt8 10
+    seqNumber:  msg.readUInt16BE 11
     updateTime: (msg.readUInt32BE(13) * 1000)
 
   # attributes specific to message type
