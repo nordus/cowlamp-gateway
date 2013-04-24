@@ -4,7 +4,9 @@ mongoose    = require('mongoose')
 Schema      = require('mongoose').Schema
 _           = require('underscore')._
 
-mongoose.connect process.env.MONGOHQ_URL
+mongoUrl = process.env.MONGOHQ_URL ? 'localhost'
+
+mongoose.connect mongoUrl
 
 readingSchema = new Schema                                                                                                                                
   altitude: Number                                                                                                                                 
