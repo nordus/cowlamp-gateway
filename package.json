@@ -1,6 +1,6 @@
 {
   "name": "cowlamp-gateway",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Decode/ack/persist messages from vehicle telematics devices",
   "main": "server.js",
   "directories": {
