@@ -1,4 +1,4 @@
-Geofence = require '../lib/geofence'
+Geofence = require '../models/geofence'
 
 xdescribe 'Geofence', ->
   describe '.whichIntersectWith', ->
