@@ -4,7 +4,7 @@ mongoose    = require('mongoose')
 Schema      = require('mongoose').Schema
 _           = require('underscore')._
 
-mongoUrl = process.env.MONGOHQ_URL ? 'localhost'
+mongoUrl = process.env.MONGOHQ_URL ? 'mongodb://localhost:27017'
 
 mongoose.connect mongoUrl
 
