@@ -30,6 +30,8 @@ readingSchema = new Schema
       delete ret._id
       ret
 
+readingSchema.index { "mobileId":1, "seqNumber":1 }, { unique:true, dropDups:true }
+
 readingSchema.virtual('latitude').set (v) ->
   @geo.coordinates[1] = v
 
