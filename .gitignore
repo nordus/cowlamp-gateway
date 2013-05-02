@@ -6,3 +6,5 @@ docs
 .c9revisions
 fetch-readings.coffee
 dummy-trip*.coffee
+data
+mongod
