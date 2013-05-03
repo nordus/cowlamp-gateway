@@ -1,8 +1,9 @@
-state       = require('../lib/event-codes').state
-eventCodes  = require('../lib/event-codes').eventCodes
-mongoose    = require('mongoose')
-Schema      = require('mongoose').Schema
-_           = require('underscore')._
+state           = require('../lib/event-codes').state
+eventCodes      = require('../lib/event-codes').eventCodes
+mongoose        = require('mongoose')
+Schema          = require('mongoose').Schema
+_               = require('underscore')._
+HistoricalTrip  = require './historical-trip'
 
 readingSchema = new Schema                                                                                                                                
   altitude: Number                                                                                                                                 
@@ -17,7 +18,7 @@ readingSchema = new Schema
   updateTime: Number                                                                                                                             
   msgType: Number
   seqNumber: Number
-  mobileId: String
+  mobileId: Number
   geo:
     type:
       type: String
@@ -30,7 +31,7 @@ readingSchema = new Schema
       delete ret._id
       ret
 
-readingSchema.index { "mobileId":1, "seqNumber":1 }, { unique:true, dropDups:true }
+readingSchema.index { mobileId:1, seqNumber:1 }, { unique:true, dropDups:true }
 
 readingSchema.virtual('latitude').set (v) ->
   @geo.coordinates[1] = v
@@ -46,6 +47,16 @@ trips = {}
 readingSchema.virtual('trip').get ->
   trips[@mobileId] ?=
     seqNumbersReceived: []
+    highestSpeed: 0
+
+readingSchema.virtual('idleMins').set (v) ->
+  @trip.idleMins = v
+
+readingSchema.virtual('vOdometerAtIgnitionOn').set (v) ->
+  @trip.vOdometerAtIgnitionOn = v
+
+readingSchema.virtual('vOdometerAtIgnitionOff').set (v) ->
+  @trip.vOdometerAtIgnitionOff = v
 
 readingSchema.virtual('event').get ->
   eventCodes["#{@eventCode}"]
@@ -57,30 +68,35 @@ readingSchema.virtual('isDeviceGeneratedAlert').get ->
   @vBatt < 12.5
 
 readingSchema.methods.aggregateTripEvents = ->
-  mobileId                = @mobileId
-  seqNumberOfIgnitionOn   = @trip.seqNumberOfIgnitionOn
-  seqNumberOfIgnitionOff  = @trip.seqNumberOfIgnitionOff
-  updateTimeOfIgnitionOn  = @trip.updateTimeOfIgnitionOn
-  updateTimeOfIgnitionOff = @trip.updateTimeOfIgnitionOff
+  historicalTrip =
+      start_at        : @trip.updateTimeOfIgnitionOn
+      device_id       : @mobileId
+      end_at          : @trip.updateTimeOfIgnitionOff
+      duration        : @trip.updateTimeOfIgnitionOff - @trip.updateTimeOfIgnitionOn
+      idle_mins       : @trip.idleMins ? 0
+      miles           : @trip.vOdometerAtIgnitionOff - @trip.vOdometerAtIgnitionOn
+      ending_mileage  : @trip.vOdometerAtIgnitionOff
+      highest_speed   : @trip.highestSpeed
+  
+  seqNumberRange =
+    $gt: @trip.seqNumberOfIgnitionOn
+    $lt: @trip.seqNumberOfIgnitionOff
   
   # reset trip
   delete trips[@mobileId]
  
   @collection.aggregate {
-    $match: { mobileId:mobileId, seqNumber: { $gt:seqNumberOfIgnitionOn, $lt:seqNumberOfIgnitionOff } }
+    $match: { mobileId:historicalTrip.mobileId, seqNumber:seqNumberRange }
   }, {
     $group: { _id:"$eventCode", num: { "$sum":1 } }
   }, (err, results) ->
-    historicalTrip =
-      start_at  : updateTimeOfIgnitionOn
-      device_id : mobileId
-      end_at    : updateTimeOfIgnitionOff
-      duration  : updateTimeOfIgnitionOff - updateTimeOfIgnitionOn
       
     results.forEach (result) ->
       historicalTrip["num_#{eventCodes[result._id]}"] = result.num
     
     console.log historicalTrip
+    
+    #HistoricalTrip.create historicalTrip
 
 readingSchema.methods.allSeqNumbersReceived = ->
   # ensure we've received both ignition_on and ignition_off
@@ -91,19 +107,20 @@ readingSchema.methods.allSeqNumbersReceived = ->
     unreceived.length is 0
 
 readingSchema.post 'save', (reading) ->
-  if reading.state is 'engineOn' or reading.event is 'ignition_off'
-    @trip.seqNumbersReceived.push reading.seqNumber
+  if @state is 'engineOn' or @event is 'ignition_off'
+    @trip.seqNumbersReceived.push @seqNumber
+    @trip.highestSpeed = Math.max(@speed, @trip.highestSpeed)
 
-  if reading.event is 'ignition_on'
-    reading.trip.seqNumberOfIgnitionOn = reading.seqNumber
-    reading.trip.updateTimeOfIgnitionOn = reading.updateTime
+  if @event is 'ignition_on'
+    @trip.seqNumberOfIgnitionOn = @seqNumber
+    @trip.updateTimeOfIgnitionOn = @updateTime
   
-  if reading.event is 'ignition_off'
-    reading.trip.seqNumberOfIgnitionOff = reading.seqNumber
-    reading.trip.updateTimeOfIgnitionOff = reading.updateTime
+  if @event is 'ignition_off'
+    @trip.seqNumberOfIgnitionOff = @seqNumber
+    @trip.updateTimeOfIgnitionOff = @updateTime
 
-  if reading.allSeqNumbersReceived()
-    reading.aggregateTripEvents()
+  if @allSeqNumbersReceived()
+    @aggregateTripEvents()
 
 
 module.exports = mongoose.model 'Reading', readingSchema
