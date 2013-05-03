@@ -31,7 +31,7 @@ readingSchema = new Schema
       delete ret._id
       ret
 
-readingSchema.index { mobileId:1, seqNumber:1 }, { unique:true, dropDups:true }
+readingSchema.index { "mobileId":1, "seqNumber":1 }, { unique:true, dropDups:true }
 
 readingSchema.virtual('latitude').set (v) ->
   @geo.coordinates[1] = v
@@ -77,7 +77,9 @@ readingSchema.methods.aggregateTripEvents = ->
       miles           : @trip.vOdometerAtIgnitionOff - @trip.vOdometerAtIgnitionOn
       ending_mileage  : @trip.vOdometerAtIgnitionOff
       highest_speed   : @trip.highestSpeed
-  
+
+  mobileId = @mobileId
+
   seqNumberRange =
     $gt: @trip.seqNumberOfIgnitionOn
     $lt: @trip.seqNumberOfIgnitionOff
@@ -86,7 +88,7 @@ readingSchema.methods.aggregateTripEvents = ->
   delete trips[@mobileId]
  
   @collection.aggregate {
-    $match: { mobileId:historicalTrip.mobileId, seqNumber:seqNumberRange }
+    $match: { mobileId:mobileId, seqNumber:seqNumberRange }
   }, {
     $group: { _id:"$eventCode", num: { "$sum":1 } }
   }, (err, results) ->
