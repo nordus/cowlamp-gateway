@@ -3,6 +3,7 @@ mongoose = require 'mongoose'
 decodePayload = require '../lib/decode-payload'
 packets = require './fixtures/raw-trip-1367358482000'
 db = require '../lib/db'
+HistoricalTrip = require '../models/historical-trip'
 
 describe 'HistoricalTrip', ->
   beforeEach ->
@@ -16,7 +17,7 @@ describe 'HistoricalTrip', ->
   
   describe 'after save', ->
     it 'aggregates trip events', ->
-      done()
+      #done()
       true
 
 

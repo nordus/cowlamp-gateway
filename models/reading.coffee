@@ -18,7 +18,7 @@ readingSchema = new Schema
   updateTime: Number                                                                                                                             
   msgType: Number
   seqNumber: Number
-  mobileId: Number
+  mobileId: String
   geo:
     type:
       type: String
@@ -69,9 +69,9 @@ readingSchema.virtual('isDeviceGeneratedAlert').get ->
 
 readingSchema.methods.aggregateTripEvents = ->
   historicalTrip =
-      start_at        : @trip.updateTimeOfIgnitionOn
+      start_at        : @trip.updateTimeOfIgnitionOn / 1000
       device_id       : @mobileId
-      end_at          : @trip.updateTimeOfIgnitionOff
+      end_at          : @trip.updateTimeOfIgnitionOff / 1000
       duration        : @trip.updateTimeOfIgnitionOff - @trip.updateTimeOfIgnitionOn
       idle_mins       : @trip.idleMins ? 0
       miles           : @trip.vOdometerAtIgnitionOff - @trip.vOdometerAtIgnitionOn
@@ -98,7 +98,11 @@ readingSchema.methods.aggregateTripEvents = ->
     
     console.log historicalTrip
     
-    #HistoricalTrip.create historicalTrip
+    HistoricalTrip.create historicalTrip, (err, trip) ->
+      console.log "-= errors =-"
+      console.log err
+      console.log "-= trip =-"
+      console.log trip
 
 readingSchema.methods.allSeqNumbersReceived = ->
   # ensure we've received both ignition_on and ignition_off

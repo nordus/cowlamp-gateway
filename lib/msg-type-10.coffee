@@ -9,7 +9,11 @@ module.exports = (msg) ->
     # cm/second to mph
     speed:      (msg.readUInt8(27) * 0.621371)
     eventCode:  msg.readUInt8(31)
-  
+
+  if parsed.eventCode is 25
+    # to minutes
+    parsed.idleMins = (msg.readUInt32BE(33) / 60)
+
   if parsed.eventCode is 26
     # millivolts to volts
     parsed.vBatt = (msg.readUInt32BE(33) * 0.001)
