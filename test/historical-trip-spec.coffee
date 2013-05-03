@@ -2,10 +2,11 @@ Reading = require '../models/reading'
 mongoose = require 'mongoose'
 decodePayload = require '../lib/decode-payload'
 packets = require './fixtures/raw-trip-1367358482000'
+db = require '../lib/db'
 
 describe 'HistoricalTrip', ->
   beforeEach ->
-    mongoose.connect "mongodb://#{process.env.IP}:27017/gateway-test"
+    mongoose.connect db.mongoUrl
     
     # save each reading from dummy trip
     for packet in packets
@@ -23,4 +24,6 @@ done = ->
   setTimeout ->
     mongoose.connection.db.dropDatabase ->
       mongoose.disconnect()
+      
+    db.postgresql.disconnect()
   , 1000
