@@ -1,0 +1,25 @@
+module.exports =
+  start_at: 1367358482
+  device_id: "4531004944"
+  end_at: 1367360054
+  duration: 1572000
+  time_zone: "America/Phoenix"
+  qos_flags: 0
+  num_corner_l: 0
+  num_corner_r: 1
+  num_very_hard_brake: 0
+  num_very_hard_accel: 0
+  num_hard_corner_l: 0
+  num_hard_corner_r: 0
+  fuel_gal_start: 0
+  fuel_gal_end: 0
+  status: 0
+  key_fob_id: 0
+  miles: 16.081702851
+  num_hard_brake: 4
+  num_hard_accel: 8
+  num_speed_event: 1
+  num_rpm_event: 4
+  ending_mileage: 1708.924971379
+  highest_speed: 79.535488
+  idle_mins: 0

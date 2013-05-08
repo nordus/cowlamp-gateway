@@ -77,6 +77,8 @@ readingSchema.methods.aggregateTripEvents = ->
       miles           : @trip.vOdometerAtIgnitionOff - @trip.vOdometerAtIgnitionOn
       ending_mileage  : @trip.vOdometerAtIgnitionOff
       highest_speed   : @trip.highestSpeed
+      start_date      : new Date(@trip.updateTimeOfIgnitionOn)
+      end_date        : new Date(@trip.updateTimeOfIgnitionOff)
 
   mobileId = @mobileId
 
@@ -96,13 +98,9 @@ readingSchema.methods.aggregateTripEvents = ->
     results.forEach (result) ->
       historicalTrip["num_#{eventCodes[result._id]}"] = result.num
     
-    console.log historicalTrip
+    historicalTrip = _.omit historicalTrip, ['num_heading', 'num_time_with_ignition_on']
     
-    HistoricalTrip.create historicalTrip, (err, trip) ->
-      console.log "-= errors =-"
-      console.log err
-      console.log "-= trip =-"
-      console.log trip
+    HistoricalTrip.create historicalTrip
 
 readingSchema.methods.allSeqNumbersReceived = ->
   # ensure we've received both ignition_on and ignition_off

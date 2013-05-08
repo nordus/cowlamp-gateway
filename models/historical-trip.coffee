@@ -40,9 +40,13 @@ historicalTripSchema =
   updated_at:
     type: Date
     default: new Date()
-  start_date: Date
+  start_date:
+    type: Date
+    default: new Date()
   highest_speed: Number
   idle_mins: Number
-  end_date: Date
+  end_date:
+    type: Date
+    default: new Date()
 
 module.exports = db.postgresql.define 'historical_trips', historicalTripSchema
