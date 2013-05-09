@@ -22,4 +22,4 @@ module.exports =
   num_rpm_event: 4
   ending_mileage: 1708.924971379
   highest_speed: 79.535488
-  idle_mins: 0
+  idle_mins: 0.0833333333333333
