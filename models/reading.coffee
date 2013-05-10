@@ -67,6 +67,9 @@ readingSchema.virtual('isDeviceGeneratedAlert').get ->
   @state is 'engineOff' &&
   @vBatt < 12.5
 
+readingSchema.virtual('ongoingTrip').get ->
+  Boolean @trip.seqNumberOfIgnitionOn
+
 readingSchema.methods.aggregateTripEvents = ->
   historicalTrip =
       start_at        : @trip.updateTimeOfIgnitionOn / 1000
@@ -111,13 +114,13 @@ readingSchema.methods.allSeqNumbersReceived = ->
     unreceived.length is 0
 
 readingSchema.post 'save', (reading) ->
-  if @state is 'engineOn' or @event is 'ignition_off'
-    @trip.seqNumbersReceived.push @seqNumber
-    @trip.highestSpeed = Math.max(@speed, @trip.highestSpeed)
-
   if @event is 'ignition_on'
     @trip.seqNumberOfIgnitionOn = @seqNumber
     @trip.updateTimeOfIgnitionOn = @updateTime
+
+  if @ongoingTrip
+    @trip.seqNumbersReceived.push @seqNumber
+    @trip.highestSpeed = Math.max(@speed, @trip.highestSpeed)
   
   if @event is 'ignition_off'
     @trip.seqNumberOfIgnitionOff = @seqNumber
