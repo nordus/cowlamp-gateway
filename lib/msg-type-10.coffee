@@ -11,7 +11,6 @@ module.exports = (msg) ->
     eventCode:  msg.readUInt8(31)
 
   if parsed.eventCode is 25
-    # to minutes
     parsed.idleSeconds = msg.readUInt32BE(33)
 
   if parsed.eventCode is 26
