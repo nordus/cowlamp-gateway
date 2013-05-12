@@ -12,7 +12,7 @@ module.exports = (msg) ->
 
   if parsed.eventCode is 25
     # to minutes
-    parsed.idleMins = (msg.readUInt32BE(33) / 60)
+    parsed.idleSeconds = msg.readUInt32BE(33)
 
   if parsed.eventCode is 26
     # millivolts to volts

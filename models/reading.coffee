@@ -49,8 +49,8 @@ readingSchema.virtual('trip').get ->
     seqNumbersReceived: []
     highestSpeed: 0
 
-readingSchema.virtual('idleMins').set (v) ->
-  @trip.idleMins = v
+readingSchema.virtual('idleSeconds').set (v) ->
+  @trip.idleSeconds = v
 
 readingSchema.virtual('vOdometerAtIgnitionOn').set (v) ->
   @trip.vOdometerAtIgnitionOn = v
@@ -76,7 +76,7 @@ readingSchema.methods.aggregateTripEvents = ->
       device_id       : @mobileId
       end_at          : @trip.updateTimeOfIgnitionOff / 1000
       duration        : @trip.updateTimeOfIgnitionOff - @trip.updateTimeOfIgnitionOn
-      idle_mins       : @trip.idleMins ? 0
+      idle_seconds    : @trip.idleSeconds ? 0
       miles           : @trip.vOdometerAtIgnitionOff - @trip.vOdometerAtIgnitionOn
       ending_mileage  : @trip.vOdometerAtIgnitionOff
       highest_speed   : @trip.highestSpeed
