@@ -71,6 +71,30 @@ readingSchema.virtual('isDeviceGeneratedAlert').get ->
 readingSchema.virtual('ongoingTrip').get ->
   Boolean @trip.seqNumberOfIgnitionOn
 
+readingSchema.virtual('alertEventType').get -> switch
+  # 1 - Battery Low
+  when @event is 'heartbeat' && @state is 'engineOff' && @vBatt < 12.5 then 1
+
+  # 3 - Engine Lights ON
+  when @event is 'mil_on' then 3
+  
+  else undefined
+
+readingSchema.methods.handleAlertsAndHistory = ->
+  if @alertEventType
+    Alert.create
+      event_type: @alertEventType
+      device_id: @mobileId
+      update_time: @updateTime
+      trip_start_at: @trip.updateTimeOfIgnitionOn / 1000
+      latitude: @latitude
+      longitude: @longitude
+  
+  if @vin
+    DeviceHistory.create
+      obd_vin: @vin
+      device_id: @mobileId
+
 readingSchema.methods.aggregateTripEvents = ->
   historicalTrip =
       start_at        : @trip.updateTimeOfIgnitionOn / 1000
@@ -129,6 +153,8 @@ readingSchema.post 'save', (reading) ->
 
   if @allSeqNumbersReceived()
     @aggregateTripEvents()
+
+  @handleAlertsAndHistory()
 
 
 module.exports = mongoose.model 'Reading', readingSchema
