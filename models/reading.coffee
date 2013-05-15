@@ -32,6 +32,7 @@ readingSchema = new Schema
       ret
 
 readingSchema.index { "mobileId":1, "seqNumber":1 }, { unique:true, dropDups:true }
+readingSchema.index { "mobileId":1, "geo":"2dsphere" }
 
 readingSchema.virtual('latitude').set (v) ->
   @geo.coordinates[1] = v
