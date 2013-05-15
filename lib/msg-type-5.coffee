@@ -23,8 +23,7 @@ module.exports = (msg) ->
     # split into 5 character DTC codes
     #
     #     P0100P0200
-    #     #=> ['P0100', 'P0200'] 
-    "#{msg.slice(55)}".match(/[A-Z]\d{4}/g).forEach (code, n) ->
-      parsed["dtcCode#{n+1}"] = code
+    #     #=> 'P0100, 'P0200'
+    parsed.dtcCodes = "#{msg.slice(55)}".match(/[A-Z]\d{4}/g).join ', '
   
   return parsed

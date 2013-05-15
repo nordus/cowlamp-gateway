@@ -3,6 +3,7 @@ db      = require('../lib/db')
 
 deviceHistorySchema =
   obd_vin: String
+  dtc_codes: String
   device_id: String
   created_at:
     type: Date

@@ -76,7 +76,7 @@ readingSchema.virtual('alertEventType').get -> switch
   when @event is 'heartbeat' && @state is 'engineOff' && @vBatt < 12.5 then 1
 
   # 3 - Engine Lights ON
-  when @event is 'mil_on' then 3
+  when @dtcCodes or @event is 'mil_on' then 3
   
   else undefined
 
@@ -90,9 +90,10 @@ readingSchema.methods.handleAlertsAndHistory = ->
       latitude: @latitude
       longitude: @longitude
   
-  if @vin
+  if @vin or @dtcCodes
     DeviceHistory.create
-      obd_vin: @vin
+      obd_vin: @vin ? null
+      dtc_codes: @dtcCodes ? null
       device_id: @mobileId
 
 readingSchema.methods.aggregateTripEvents = ->
