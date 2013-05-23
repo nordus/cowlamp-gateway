@@ -9,20 +9,18 @@ _               = require('underscore')._
 describe 'HistoricalTrip', ->
   beforeEach ->
 
-    mongoose.connect db.mongoUrl, (err, db) =>
+    mongoose.connect db.mongoUrl, (err, db) ->
 
-      tripComplete = (historicalTrip) =>
-        @historicalTrip = historicalTrip
+      console.log '.. MongoDB connected'
 
-      for packet in packets
-        payload = decodePayload(new Buffer(packet))
-        reading = new Reading(payload)
-        reading.on 'tripComplete', tripComplete
-        reading.save()
+    tripComplete = (historicalTrip) =>
+      @historicalTrip = historicalTrip
 
-      asyncSpecDone()
-
-    asyncSpecWait()
+    for packet in packets
+      payload = decodePayload(new Buffer(packet))
+      reading = new Reading(payload)
+      reading.on 'tripComplete', tripComplete
+      reading.save()
 
   it 'works', ->
     waitsFor ->
