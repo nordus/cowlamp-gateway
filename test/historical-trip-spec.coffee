@@ -13,7 +13,6 @@ describe 'HistoricalTrip', ->
 
     tripComplete = (historicalTrip) =>
       @historicalTrip = historicalTrip
-      asyncSpecDone()
 
     for packet in packets
       payload = decodePayload(new Buffer(packet))
@@ -21,13 +20,16 @@ describe 'HistoricalTrip', ->
       reading.on 'tripComplete', tripComplete
       reading.save()
 
-    asyncSpecWait()
-
   it 'works', ->
-    # start_date and end_date are dependent on local system's timezone
-    historicalTrip = _.omit @historicalTrip, ['start_date', 'end_date']
-    expect(historicalTrip).toEqual tripEvents
-    done()
+    waitsFor ->
+      @historicalTrip
+    , 10000
+
+    runs ->
+      # start_date and end_date are dependent on local system's timezone
+      historicalTrip = _.omit @historicalTrip, ['start_date', 'end_date']
+      expect(historicalTrip).toEqual tripEvents
+      done()
 
 
 done = ->
