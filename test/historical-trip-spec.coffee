@@ -9,21 +9,25 @@ _               = require('underscore')._
 describe 'HistoricalTrip', ->
   beforeEach ->
 
-    mongoose.connect db.mongoUrl
+    mongoose.connect db.mongoUrl, (err, db) =>
 
-    tripComplete = (historicalTrip) =>
-      @historicalTrip = historicalTrip
+      tripComplete = (historicalTrip) =>
+        @historicalTrip = historicalTrip
 
-    for packet in packets
-      payload = decodePayload(new Buffer(packet))
-      reading = new Reading(payload)
-      reading.on 'tripComplete', tripComplete
-      reading.save()
+      for packet in packets
+        payload = decodePayload(new Buffer(packet))
+        reading = new Reading(payload)
+        reading.on 'tripComplete', tripComplete
+        reading.save()
+
+      asyncSpecDone()
+
+    asyncSpecWait()
 
   it 'works', ->
     waitsFor ->
       @historicalTrip
-    , 10000
+    , 20000
 
     runs ->
       # start_date and end_date are dependent on local system's timezone
