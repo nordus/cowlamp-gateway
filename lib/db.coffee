@@ -8,4 +8,6 @@ exports.postgresql = new Schema 'postgres',
   password: 'n0rd3v'
 
 mongoIP = process.env.IP ? 'localhost'
-exports.mongoUrl = process.env.MONGOHQ_URL ? "mongodb://#{mongoIP}:27017/gateway-test"
+exports.mongoUrl = switch process.env.NODE_ENV
+  when 'test' then "mongodb://#{mongoIP}:27017/gateway-test"
+  else process.env.MONGOHQ_URL
