@@ -150,7 +150,6 @@ readingSchema.post 'save', (reading) ->
     @trip.updateTimeOfIgnitionOff = @updateTime
 
   if @allSeqNumbersReceived()
-    console.log '... TRIP COMPLETE'
     @aggregateTripEvents()
 
 #  @handleAlertsAndHistory()
