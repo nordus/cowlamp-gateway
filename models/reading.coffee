@@ -124,6 +124,7 @@ readingSchema.methods.aggregateTripEvents = ->
     historicalTrip = _.omit historicalTrip, ['num_heading', 'num_time_with_ignition_on']
 
     if process.env.NODE_ENV is 'test'
+      console.log '... TRIP COMPLETE'
       @emit 'tripComplete', historicalTrip
     else
       HistoricalTrip.create historicalTrip
