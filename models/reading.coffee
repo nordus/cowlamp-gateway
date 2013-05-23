@@ -122,14 +122,17 @@ readingSchema.methods.aggregateTripEvents = ->
     $match: { mobileId:mobileId, seqNumber:seqNumberRange }
   }, {
     $group: { _id:"$eventCode", num: { "$sum":1 } }
-  }, (err, results) ->
+  }, (err, results) =>
       
     results.forEach (result) ->
       historicalTrip["num_#{eventCodes[result._id]}"] = result.num
     
     historicalTrip = _.omit historicalTrip, ['num_heading', 'num_time_with_ignition_on']
-    
-    HistoricalTrip.create historicalTrip
+
+    if process.env.NODE_ENV is 'test'
+      @emit 'tripComplete', historicalTrip
+    else
+      HistoricalTrip.create historicalTrip
 
 readingSchema.methods.allSeqNumbersReceived = ->
   # ensure we've received both ignition_on and ignition_off
