@@ -62,12 +62,6 @@ readingSchema.virtual('vOdometerAtIgnitionOff').set (v) ->
 readingSchema.virtual('event').get ->
   eventCodes["#{@eventCode}"]
 
-readingSchema.virtual('isDeviceGeneratedAlert').get ->
-  @event is 'mil_on'    ||
-  @event is 'heartbeat' &&
-  @state is 'engineOff' &&
-  @vBatt < 12.5
-
 readingSchema.virtual('ongoingTrip').get ->
   Boolean @trip.seqNumberOfIgnitionOn
 
