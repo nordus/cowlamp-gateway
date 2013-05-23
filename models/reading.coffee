@@ -152,7 +152,7 @@ readingSchema.post 'save', (reading) ->
   if @allSeqNumbersReceived()
     @aggregateTripEvents()
 
-  @handleAlertsAndHistory()
+#  @handleAlertsAndHistory()
 
 
 module.exports = mongoose.model 'Reading', readingSchema
