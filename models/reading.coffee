@@ -107,9 +107,6 @@ readingSchema.methods.aggregateTripEvents = ->
   seqNumberRange =
     $gt: @trip.seqNumberOfIgnitionOn
     $lt: @trip.seqNumberOfIgnitionOff
-  
-  # reset trip
-#  delete trips[@mobileId]
  
   @collection.aggregate {
     $match: { mobileId:mobileId, seqNumber:seqNumberRange }
@@ -136,16 +133,15 @@ readingSchema.methods.allSeqNumbersReceived = ->
   # ensure we've received both ignition_on and ignition_off
   if @trip.seqNumberOfIgnitionOn and @trip.seqNumberOfIgnitionOff
     totalSeqNumbers = [@trip.seqNumberOfIgnitionOn..@trip.seqNumberOfIgnitionOff].length
+
     @collection.count
       seqNumber:
         $gte: @trip.seqNumberOfIgnitionOn
         $lte: @trip.seqNumberOfIgnitionOff
     , (err, count) =>
+        # ensure we've received all sequence numbers
         if count == totalSeqNumbers
           @aggregateTripEvents()
-    # ensure we've received all sequence numbers
-#    unreceived = _.difference allSeqNumbers, @trip.seqNumbersReceived
-#    unreceived.length is 0
 
 readingSchema.post 'save', (reading) ->
   if @event is 'ignition_on'
@@ -158,9 +154,6 @@ readingSchema.post 'save', (reading) ->
   if @event is 'ignition_off'
     @trip.seqNumberOfIgnitionOff = @seqNumber
     @trip.updateTimeOfIgnitionOff = @updateTime
-
-#  if @allSeqNumbersReceived()
-#    @aggregateTripEvents()
 
   @allSeqNumbersReceived()
 
