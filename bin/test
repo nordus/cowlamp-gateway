@@ -1,2 +1,2 @@
 #!/bin/bash
-NODE_ENV=test node_modules/jasmine-node/bin/jasmine-node --coffee test
+node_modules/jasmine-node/bin/jasmine-node test --coffee --forceexit

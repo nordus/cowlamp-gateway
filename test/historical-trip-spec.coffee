@@ -28,10 +28,4 @@ describe 'HistoricalTrip', ->
 
 
 done = ->
-  setTimeout ->
-    mongoose.connection.db.dropDatabase ->
-      mongoose.disconnect()
-
-
-    db.postgresql.disconnect()
-  , 5000
+  mongoose.connection.db.dropDatabase()
