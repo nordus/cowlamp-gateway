@@ -47,7 +47,6 @@ readingSchema.virtual('state').get ->
 trips = {}
 readingSchema.virtual('trip').get ->
   trips[@mobileId] ?=
-    seqNumbersReceived: []
     highestSpeed: 0
 
 readingSchema.virtual('idleSeconds').set (v) ->
@@ -110,7 +109,7 @@ readingSchema.methods.aggregateTripEvents = ->
     $lt: @trip.seqNumberOfIgnitionOff
   
   # reset trip
-  delete trips[@mobileId]
+#  delete trips[@mobileId]
  
   @collection.aggregate {
     $match: { mobileId:mobileId, seqNumber:seqNumberRange }
@@ -125,16 +124,28 @@ readingSchema.methods.aggregateTripEvents = ->
 
     if process.env.NODE_ENV is 'test'
       @emit 'tripComplete', historicalTrip
+      setTimeout =>
+        delete trips[@mobileId]
+      , 13
+
     else
-      HistoricalTrip.create historicalTrip
+      HistoricalTrip.create historicalTrip, (err, ht) ->
+        delete trips[@mobileId]
 
 readingSchema.methods.allSeqNumbersReceived = ->
   # ensure we've received both ignition_on and ignition_off
   if @trip.seqNumberOfIgnitionOn and @trip.seqNumberOfIgnitionOff
-    allSeqNumbers = [@trip.seqNumberOfIgnitionOn..@trip.seqNumberOfIgnitionOff]
+    totalSeqNumbers = [@trip.seqNumberOfIgnitionOn..@trip.seqNumberOfIgnitionOff].length
+    @collection.count
+      seqNumber:
+        $gte: @trip.seqNumberOfIgnitionOn
+        $lte: @trip.seqNumberOfIgnitionOff
+    , (err, count) =>
+        if count == totalSeqNumbers
+          @aggregateTripEvents()
     # ensure we've received all sequence numbers
-    unreceived = _.difference allSeqNumbers, @trip.seqNumbersReceived
-    unreceived.length is 0
+#    unreceived = _.difference allSeqNumbers, @trip.seqNumbersReceived
+#    unreceived.length is 0
 
 readingSchema.post 'save', (reading) ->
   if @event is 'ignition_on'
@@ -142,15 +153,16 @@ readingSchema.post 'save', (reading) ->
     @trip.updateTimeOfIgnitionOn = @updateTime
 
   if @ongoingTrip
-    @trip.seqNumbersReceived.push @seqNumber
     @trip.highestSpeed = Math.max(@speed, @trip.highestSpeed)
   
   if @event is 'ignition_off'
     @trip.seqNumberOfIgnitionOff = @seqNumber
     @trip.updateTimeOfIgnitionOff = @updateTime
 
-  if @allSeqNumbersReceived()
-    @aggregateTripEvents()
+#  if @allSeqNumbersReceived()
+#    @aggregateTripEvents()
+
+  @allSeqNumbersReceived()
 
 #  @handleAlertsAndHistory()
 

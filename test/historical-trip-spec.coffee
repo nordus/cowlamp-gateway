@@ -9,8 +9,6 @@ _               = require('underscore')._
 describe 'HistoricalTrip', ->
   beforeEach ->
 
-    mongoose.connect db.mongoUrl
-
     tripComplete = (historicalTrip) =>
       @historicalTrip = historicalTrip
       asyncSpecDone()
@@ -30,8 +28,10 @@ describe 'HistoricalTrip', ->
 
 
 done = ->
-  mongoose.connection.db.dropDatabase ->
-    mongoose.disconnect()
+  setTimeout ->
+    mongoose.connection.db.dropDatabase ->
+      mongoose.disconnect()
 
 
-  db.postgresql.disconnect()
+    db.postgresql.disconnect()
+  , 5000
