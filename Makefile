@@ -1,5 +1,5 @@
 docs: lib
-	@node_modules/.bin/lidoc README.md lib/*.coffee --output docs --github nordus/cowlamp-gateway
+	@node_modules/.bin/lidoc README.md lib/*.coffee models/*.coffee --output docs --github nordus/cowlamp-gateway
 
 docs.deploy: docs
 	@cd docs && \
