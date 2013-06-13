@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>reading-schema.html</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../style.css" />
+  <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.0/jquery-1.8.0.min.js'></script>
+</head>
+<body>
+  <div id="area">
+    <div class='file-header'>
+              <a href="https://github.com/nordus/cowlamp-gateway/blob/master/models/reading-schema.coffee">
+          <strong title='models/reading-schema.coffee'>reading-schema.coffee</strong>
+          <small>View source</small>
+        </a>
+          </div>
+
+    <table cellpadding="0" cellspacing="0" class="extension-coffee">
+      <thead>
+        <tr>
+          <th class="docs">
+          </th>
+          <th class="code">
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+                                      
+          <tr id="section-0" class="">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-0">&#182;</a>
+              </div>
+                          </td>
+            <td class="code">
+              <div class="highlight"><pre><span class="nv">Schema = </span><span class="nx">require</span><span class="p">(</span><span class="s">&#39;mongoose&#39;</span><span class="p">).</span><span class="nx">Schema</span>
+
+<span class="nv">module.exports = </span><span class="k">new</span> <span class="nx">Schema</span>
+  <span class="nv">altitude: </span><span class="nb">Number</span>
+  <span class="nv">speed: </span><span class="nb">Number</span>
+  <span class="nv">heading: </span><span class="nb">Number</span>
+  <span class="nv">satellites: </span><span class="nb">Number</span>
+  <span class="nv">rssi: </span><span class="nb">Number</span>
+  <span class="nv">hdop: </span><span class="nb">Number</span>
+  <span class="nv">eventCode:</span>
+    <span class="nv">type: </span><span class="nb">Number</span>
+    <span class="nv">required: </span><span class="kc">false</span>
+  <span class="nv">updateTime: </span><span class="nb">Number</span>
+  <span class="nv">msgType: </span><span class="nb">Number</span>
+  <span class="nv">seqNumber: </span><span class="nb">Number</span>
+  <span class="nv">mobileId: </span><span class="nb">String</span>
+  <span class="nv">geo:</span>
+    <span class="nv">type:</span>
+      <span class="nv">type: </span><span class="nb">String</span>
+      <span class="nv">default: </span><span class="s">&#39;Point&#39;</span>
+    <span class="nv">coordinates: </span><span class="p">[]</span>
+<span class="p">,</span>
+  <span class="nv">strict: </span><span class="kc">false</span>
+  <span class="nv">toObject:</span>
+    <span class="nv">transform: </span><span class="nf">(doc, ret, options) -&gt;</span>
+      <span class="k">delete</span> <span class="nx">ret</span><span class="p">.</span><span class="nx">_id</span>
+      <span class="nx">ret</span>
+
+</pre></div>            </td>
+          </tr>
+              </tbody>
+    </table>
+
+    
+  </div>
+
+  <div id="sidebar">
+    <div class='header search'>
+      <input type='text' name='search' id='search-box' placeholder='Search...' />
+    </div>
+
+    <div class='header tabs'>
+      <button class='active' data-tab='pages'>Pages</button>
+      <button data-tab='files'>Files</button>
+    </div>
+
+    <div class='scroll-area'>
+      <!-- .multipage here means there will be a sidebar of many pages. -->
+      <div class='list pages multipage'>
+              </div>
+
+      <div class='list files hidden'>
+        
+        <ul>
+                  <li class='level-1'>
+                                                    <a href='../index.html#f' class='item file '>
+                <i></i>
+                README.md              </a>
+                      </li>
+                                    <li class='level-1'>
+                                                    <button class='item folder '>
+                <i></i>
+                lib              </button>
+              <ul class='hidden'>
+                          <li class='level-2'>
+                                                    <a href='../lib/ack.html#f' class='item file '>
+                <i></i>
+                ack.coffee              </a>
+                      </li>
+                                                    <li class='level-2'>
+                                                    <a href='../lib/common-2-and-5.html#f' class='item file '>
+                <i></i>
+                common-2-and-5.coffee              </a>
+                      </li>
+                                                    <li class='level-2'>
+                                                    <a href='../lib/db.html#f' class='item file '>
+                <i></i>
+                db.coffee              </a>
+                      </li>
+                                                    <li class='level-2'>
+                                                    <a href='../lib/decode-payload.html#f' class='item file '>
+                <i></i>
+                decode-payload.coffee              </a>
+                      </li>
+                                                    <li class='level-2'>
+                                                    <a href='../lib/event-codes.html#f' class='item file '>
+                <i></i>
+                event-codes.coffee              </a>
+                      </li>
+                                                    <li class='level-2'>
+                                                    <a href='../lib/main.html#f' class='item file '>
+                <i></i>
+                main.coffee              </a>
+                      </li>
+                                                    <li class='level-2'>
+                                                    <a href='../lib/msg-type-10.html#f' class='item file '>
+                <i></i>
+                msg-type-10.coffee              </a>
+                      </li>
+                                                    <li class='level-2'>
+                                                    <a href='../lib/msg-type-2.html#f' class='item file '>
+                <i></i>
+                msg-type-2.coffee              </a>
+                      </li>
+                                                    <li class='level-2'>
+                                                    <a href='../lib/msg-type-5.html#f' class='item file '>
+                <i></i>
+                msg-type-5.coffee              </a>
+                      </li>
+                                                        </ul>
+            </li>
+                      </li>
+                                    <li class='level-1'>
+                                                    <button class='item folder expanded'>
+                <i></i>
+                models              </button>
+              <ul class=''>
+                          <li class='level-2'>
+                                                    <a href='../models/alert.html#f' class='item file '>
+                <i></i>
+                alert.coffee              </a>
+                      </li>
+                                                    <li class='level-2'>
+                                                    <a href='../models/device-history.html#f' class='item file '>
+                <i></i>
+                device-history.coffee              </a>
+                      </li>
+                                                    <li class='level-2'>
+                                                    <a href='../models/geofence.html#f' class='item file '>
+                <i></i>
+                geofence.coffee              </a>
+                      </li>
+                                                    <li class='level-2'>
+                                                    <a href='../models/historical-trip.html#f' class='item file '>
+                <i></i>
+                historical-trip.coffee              </a>
+                      </li>
+                                                    <li class='level-2'>
+                                                    <a href='../models/reading-schema.html#f' class='item file active'>
+                <i></i>
+                reading-schema.coffee              </a>
+                      </li>
+                                                    <li class='level-2'>
+                                                    <a href='../models/reading.html#f' class='item file '>
+                <i></i>
+                reading.coffee              </a>
+                      </li>
+                                                        </ul>
+            </li>
+                      </li>
+                                  </ul>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script src='../script.js'></script>
+</body>
+</html>

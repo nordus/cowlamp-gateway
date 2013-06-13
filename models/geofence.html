@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Geofence</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../style.css" />
+  <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.0/jquery-1.8.0.min.js'></script>
+</head>
+<body>
+  <div id="area">
+    <div class='file-header'>
+              <a href="https://github.com/nordus/cowlamp-gateway/blob/master/models/geofence.coffee">
+          <strong title='models/geofence.coffee'>geofence.coffee</strong>
+          <small>View source</small>
+        </a>
+          </div>
+
+    <table cellpadding="0" cellspacing="0" class="extension-coffee">
+      <thead>
+        <tr>
+          <th class="docs">
+          </th>
+          <th class="code">
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+                                      
+          <tr id="Geofence" class="heading">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#Geofence">&#182;</a>
+              </div>
+              <h1>Geofence</h1>            </td>
+            <td class="code">
+              <div class="highlight"><pre><span class="nv">mongoose        = </span><span class="nx">require</span><span class="p">(</span><span class="s">&#39;mongoose&#39;</span><span class="p">)</span>
+<span class="nv">Schema          = </span><span class="nx">require</span><span class="p">(</span><span class="s">&#39;mongoose&#39;</span><span class="p">).</span><span class="nx">Schema</span>
+
+<span class="nv">geofenceSchema = </span><span class="k">new</span> <span class="nx">Schema</span>
+  <span class="nv">geo:</span>
+    <span class="nv">type:</span>
+      <span class="nv">type: </span><span class="nb">String</span>
+      <span class="nv">default: </span><span class="s">&#39;Point&#39;</span>
+    <span class="nv">coordinates: </span><span class="p">[]</span>
+  <span class="nv">color:</span>
+    <span class="nv">type: </span><span class="nb">String</span>
+    <span class="nv">default: </span><span class="s">&#39;#0000ff&#39;</span>
+  <span class="nv">name: </span><span class="nb">String</span>
+  <span class="nv">mobileId: </span><span class="nb">String</span>
+<span class="p">,</span>
+  <span class="nv">strict: </span><span class="kc">false</span>
+  <span class="nv">toObject:</span>
+    <span class="nv">transform: </span><span class="nf">(doc, ret, options) -&gt;</span>
+      <span class="k">delete</span> <span class="nx">ret</span><span class="p">.</span><span class="nx">_id</span>
+      <span class="nx">ret</span>
+
+<span class="nx">geofenceSchema</span><span class="p">.</span><span class="nx">index</span> <span class="p">{</span> <span class="s">&quot;mobileId&quot;</span><span class="o">:</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;geo&quot;</span><span class="o">:</span><span class="s">&quot;2dsphere&quot;</span> <span class="p">}</span>
+
+<span class="nx">geofenceSchema</span><span class="p">.</span><span class="nx">virtual</span><span class="p">(</span><span class="s">&#39;latitude&#39;</span><span class="p">).</span><span class="nx">set</span> <span class="nf">(v) -&gt;</span>
+  <span class="nx">@geo</span><span class="p">.</span><span class="nx">coordinates</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nx">v</span>
+
+<span class="nx">geofenceSchema</span><span class="p">.</span><span class="nx">virtual</span><span class="p">(</span><span class="s">&#39;longitude&#39;</span><span class="p">).</span><span class="nx">set</span> <span class="nf">(v) -&gt;</span>
+  <span class="nx">@geo</span><span class="p">.</span><span class="nx">coordinates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nx">v</span>
+
+<span class="nv">module.exports = </span><span class="nx">mongoose</span><span class="p">.</span><span class="nx">model</span> <span class="s">&#39;Geofence&#39;</span><span class="p">,</span> <span class="nx">geofenceSchema</span>
+
+</pre></div>            </td>
+          </tr>
+              </tbody>
+    </table>
+
+    
+  </div>
+
+  <div id="sidebar">
+    <div class='header search'>
+      <input type='text' name='search' id='search-box' placeholder='Search...' />
+    </div>
+
+    <div class='header tabs'>
+      <button class='active' data-tab='pages'>Pages</button>
+      <button data-tab='files'>Files</button>
+    </div>
+
+    <div class='scroll-area'>
+      <!-- .multipage here means there will be a sidebar of many pages. -->
+      <div class='list pages multipage'>
+                  
+          <!-- Breadcrumbs -->
+                                  <ul class='breadcrumbs'>
+                              
+                <li class='page back'>
+                                  <a href='../index.html'>cowlamp-gateway</a>
+                                          </ul>
+          
+          <!-- The page and its headings -->
+          <ul class='current-page'>
+                        
+            <li class='page level-0'>
+              <a href='#'>Geofence</a>
+                          </li>
+          </ul>
+
+          <ul class='reference'>
+
+            <!-- The reference page -->
+                          <li class='page has-children level-0'>
+                                  <a href='../index.html'>cowlamp-gateway</a>
+                              </li>
+            
+            <!-- Subpages of the ref -->
+                                                                                                                      
+                <li class='page  level-1'>
+
+                                                        <a href='../lib/ack.html' class=''>Ack</a>
+                  
+                                                    </li>
+                                                                                              
+                <li class='page  level-1'>
+
+                                                        <a href='../lib/decode-payload.html' class=''>Decode Payload</a>
+                  
+                                                    </li>
+                                                                                              
+                <li class='page  level-1'>
+
+                                                        <a href='../lib/msg-type-10.html' class=''>Message Type 10</a>
+                  
+                                                    </li>
+                                                                                              
+                <li class='page  level-1'>
+
+                                                        <a href='../lib/msg-type-2.html' class=''>Message Type 2</a>
+                  
+                                                    </li>
+                                                                                              
+                <li class='page  level-1'>
+
+                                                        <a href='../lib/msg-type-5.html' class=''>Message Type 5</a>
+                  
+                                                    </li>
+                                                                                              
+                <li class='page  level-1'>
+
+                                                        <a href='../models/geofence.html' class='active'>Geofence</a>
+                  
+                                                    </li>
+                                                                                              
+                <li class='page  level-1'>
+
+                                                        <a href='../models/reading.html' class=''>Reading</a>
+                  
+                                                    </li>
+                          
+          </ul>
+              </div>
+
+      <div class='list files hidden'>
+        
+        <ul>
+                  <li class='level-1'>
+                                                    <a href='../index.html#f' class='item file '>
+                <i></i>
+                README.md              </a>
+                      </li>
+                                    <li class='level-1'>
+                                                    <button class='item folder '>
+                <i></i>
+                lib              </button>
+              <ul class='hidden'>
+                          <li class='level-2'>
+                                                    <a href='../lib/ack.html#f' class='item file '>
+                <i></i>
+                ack.coffee              </a>
+                      </li>
+                                                    <li class='level-2'>
+                                                    <a href='../lib/common-2-and-5.html#f' class='item file '>
+                <i></i>
+                common-2-and-5.coffee              </a>
+                      </li>
+                                                    <li class='level-2'>
+                                                    <a href='../lib/db.html#f' class='item file '>
+                <i></i>
+                db.coffee              </a>
+                      </li>
+                                                    <li class='level-2'>
+                                                    <a href='../lib/decode-payload.html#f' class='item file '>
+                <i></i>
+                decode-payload.coffee              </a>
+                      </li>
+                                                    <li class='level-2'>
+                                                    <a href='../lib/event-codes.html#f' class='item file '>
+                <i></i>
+                event-codes.coffee              </a>
+                      </li>
+                                                    <li class='level-2'>
+                                                    <a href='../lib/main.html#f' class='item file '>
+                <i></i>
+                main.coffee              </a>
+                      </li>
+                                                    <li class='level-2'>
+                                                    <a href='../lib/msg-type-10.html#f' class='item file '>
+                <i></i>
+                msg-type-10.coffee              </a>
+                      </li>
+                                                    <li class='level-2'>
+                                                    <a href='../lib/msg-type-2.html#f' class='item file '>
+                <i></i>
+                msg-type-2.coffee              </a>
+                      </li>
+                                                    <li class='level-2'>
+                                                    <a href='../lib/msg-type-5.html#f' class='item file '>
+                <i></i>
+                msg-type-5.coffee              </a>
+                      </li>
+                                                        </ul>
+            </li>
+                      </li>
+                                    <li class='level-1'>
+                                                    <button class='item folder expanded'>
+                <i></i>
+                models              </button>
+              <ul class=''>
+                          <li class='level-2'>
+                                                    <a href='../models/alert.html#f' class='item file '>
+                <i></i>
+                alert.coffee              </a>
+                      </li>
+                                                    <li class='level-2'>
+                                                    <a href='../models/device-history.html#f' class='item file '>
+                <i></i>
+                device-history.coffee              </a>
+                      </li>
+                                                    <li class='level-2'>
+                                                    <a href='../models/geofence.html#f' class='item file active'>
+                <i></i>
+                geofence.coffee              </a>
+                      </li>
+                                                    <li class='level-2'>
+                                                    <a href='../models/historical-trip.html#f' class='item file '>
+                <i></i>
+                historical-trip.coffee              </a>
+                      </li>
+                                                    <li class='level-2'>
+                                                    <a href='../models/reading-schema.html#f' class='item file '>
+                <i></i>
+                reading-schema.coffee              </a>
+                      </li>
+                                                    <li class='level-2'>
+                                                    <a href='../models/reading.html#f' class='item file '>
+                <i></i>
+                reading.coffee              </a>
+                      </li>
+                                                        </ul>
+            </li>
+                      </li>
+                                  </ul>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script src='../script.js'></script>
+</body>
+</html>

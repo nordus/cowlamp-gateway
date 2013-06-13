@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Reading</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../style.css" />
+  <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.0/jquery-1.8.0.min.js'></script>
+</head>
+<body>
+  <div id="area">
+    <div class='file-header'>
+              <a href="https://github.com/nordus/cowlamp-gateway/blob/master/models/reading.coffee">
+          <strong title='models/reading.coffee'>reading.coffee</strong>
+          <small>View source</small>
+        </a>
+          </div>
+
+    <table cellpadding="0" cellspacing="0" class="extension-coffee">
+      <thead>
+        <tr>
+          <th class="docs">
+          </th>
+          <th class="code">
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+                                      
+          <tr id="Reading" class="heading">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#Reading">&#182;</a>
+              </div>
+              <h1>Reading</h1>            </td>
+            <td class="code">
+              <div class="highlight"><pre><span class="nv">state           = </span><span class="nx">require</span><span class="p">(</span><span class="s">&#39;../lib/event-codes&#39;</span><span class="p">).</span><span class="nx">state</span>
+<span class="nv">eventCodes      = </span><span class="nx">require</span><span class="p">(</span><span class="s">&#39;../lib/event-codes&#39;</span><span class="p">).</span><span class="nx">eventCodes</span>
+<span class="nv">mongoose        = </span><span class="nx">require</span><span class="p">(</span><span class="s">&#39;mongoose&#39;</span><span class="p">)</span>
+<span class="nv">readingSchema   = </span><span class="nx">require</span><span class="p">(</span><span class="s">&#39;./reading-schema&#39;</span><span class="p">)</span>
+<span class="nv">_               = </span><span class="nx">require</span><span class="p">(</span><span class="s">&#39;underscore&#39;</span><span class="p">).</span><span class="nx">_</span>
+<span class="nv">HistoricalTrip  = </span><span class="nx">require</span> <span class="s">&#39;./historical-trip&#39;</span>
+
+<span class="nx">readingSchema</span><span class="p">.</span><span class="nx">index</span> <span class="p">{</span> <span class="s">&quot;mobileId&quot;</span><span class="o">:</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;seqNumber&quot;</span><span class="o">:</span><span class="mi">1</span> <span class="p">},</span> <span class="p">{</span> <span class="nx">unique</span><span class="o">:</span><span class="kc">true</span><span class="p">,</span> <span class="nx">dropDups</span><span class="o">:</span><span class="kc">true</span> <span class="p">}</span>
+<span class="nx">readingSchema</span><span class="p">.</span><span class="nx">index</span> <span class="p">{</span> <span class="s">&quot;mobileId&quot;</span><span class="o">:</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;geo&quot;</span><span class="o">:</span><span class="s">&quot;2dsphere&quot;</span> <span class="p">}</span>
+
+<span class="nx">readingSchema</span><span class="p">.</span><span class="nx">virtual</span><span class="p">(</span><span class="s">&#39;latitude&#39;</span><span class="p">).</span><span class="nx">set</span> <span class="nf">(v) -&gt;</span>
+  <span class="nx">@geo</span><span class="p">.</span><span class="nx">coordinates</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nx">v</span>
+
+<span class="nx">readingSchema</span><span class="p">.</span><span class="nx">virtual</span><span class="p">(</span><span class="s">&#39;longitude&#39;</span><span class="p">).</span><span class="nx">set</span> <span class="nf">(v) -&gt;</span>
+  <span class="nx">@geo</span><span class="p">.</span><span class="nx">coordinates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nx">v</span></pre></div>            </td>
+          </tr>
+                                      
+          <tr id="section-1" class="">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <p>example 'engineOn', 'engineOff'</p>            </td>
+            <td class="code">
+              <div class="highlight"><pre><span class="nx">readingSchema</span><span class="p">.</span><span class="nx">virtual</span><span class="p">(</span><span class="s">&#39;state&#39;</span><span class="p">).</span><span class="nx">get</span> <span class="nf">-&gt;</span>
+  <span class="nx">state</span><span class="p">(</span><span class="nx">@eventCode</span><span class="p">)</span>
+
+<span class="nv">trips = </span><span class="p">{}</span>
+<span class="nx">readingSchema</span><span class="p">.</span><span class="nx">virtual</span><span class="p">(</span><span class="s">&#39;trip&#39;</span><span class="p">).</span><span class="nx">get</span> <span class="nf">-&gt;</span>
+  <span class="nx">trips</span><span class="p">[</span><span class="nx">@mobileId</span><span class="p">]</span> <span class="o">?=</span>
+    <span class="nv">highestSpeed: </span><span class="mi">0</span>
+
+<span class="nx">readingSchema</span><span class="p">.</span><span class="nx">virtual</span><span class="p">(</span><span class="s">&#39;idleSeconds&#39;</span><span class="p">).</span><span class="nx">set</span> <span class="nf">(v) -&gt;</span>
+  <span class="vi">@trip.idleSeconds = </span><span class="nx">v</span>
+
+<span class="nx">readingSchema</span><span class="p">.</span><span class="nx">virtual</span><span class="p">(</span><span class="s">&#39;vOdometerAtIgnitionOn&#39;</span><span class="p">).</span><span class="nx">set</span> <span class="nf">(v) -&gt;</span>
+  <span class="vi">@trip.vOdometerAtIgnitionOn = </span><span class="nx">v</span>
+
+<span class="nx">readingSchema</span><span class="p">.</span><span class="nx">virtual</span><span class="p">(</span><span class="s">&#39;vOdometerAtIgnitionOff&#39;</span><span class="p">).</span><span class="nx">set</span> <span class="nf">(v) -&gt;</span>
+  <span class="vi">@trip.vOdometerAtIgnitionOff = </span><span class="nx">v</span>
+
+<span class="nx">readingSchema</span><span class="p">.</span><span class="nx">virtual</span><span class="p">(</span><span class="s">&#39;event&#39;</span><span class="p">).</span><span class="nx">get</span> <span class="nf">-&gt;</span>
+  <span class="nx">eventCodes</span><span class="p">[</span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">@eventCode</span><span class="si">}</span><span class="s">&quot;</span><span class="p">]</span>
+
+<span class="nx">readingSchema</span><span class="p">.</span><span class="nx">virtual</span><span class="p">(</span><span class="s">&#39;ongoingTrip&#39;</span><span class="p">).</span><span class="nx">get</span> <span class="nf">-&gt;</span>
+  <span class="nb">Boolean</span> <span class="nx">@trip</span><span class="p">.</span><span class="nx">seqNumberOfIgnitionOn</span>
+
+<span class="nx">readingSchema</span><span class="p">.</span><span class="nx">virtual</span><span class="p">(</span><span class="s">&#39;alertEventType&#39;</span><span class="p">).</span><span class="nx">get</span> <span class="nf">-&gt;</span> <span class="k">switch</span></pre></div>            </td>
+          </tr>
+                                      
+          <tr id="section-2" class="">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>1 - Battery Low</p>            </td>
+            <td class="code">
+              <div class="highlight"><pre>  <span class="k">when</span> <span class="nx">@event</span> <span class="o">is</span> <span class="s">&#39;heartbeat&#39;</span> <span class="o">&amp;&amp;</span> <span class="nx">@state</span> <span class="o">is</span> <span class="s">&#39;engineOff&#39;</span> <span class="o">&amp;&amp;</span> <span class="nx">@vBatt</span> <span class="o">&lt;</span> <span class="mf">12.5</span> <span class="k">then</span> <span class="mi">1</span></pre></div>            </td>
+          </tr>
+                                      
+          <tr id="section-3" class="">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>3 - Engine Lights ON</p>            </td>
+            <td class="code">
+              <div class="highlight"><pre>  <span class="k">when</span> <span class="nx">@dtcCodes</span> <span class="o">or</span> <span class="nx">@event</span> <span class="o">is</span> <span class="s">&#39;mil_on&#39;</span> <span class="k">then</span> <span class="mi">3</span>
+  
+  <span class="k">else</span> <span class="kc">undefined</span>
+
+<span class="nx">readingSchema</span><span class="p">.</span><span class="nx">virtual</span><span class="p">(</span><span class="s">&#39;historicalTrip&#39;</span><span class="p">).</span><span class="nx">get</span> <span class="nf">-&gt;</span> <span class="p">{</span>
+  <span class="nv">start_at        : </span><span class="nx">@trip</span><span class="p">.</span><span class="nx">updateTimeOfIgnitionOn</span> <span class="o">/</span> <span class="mi">1000</span>
+  <span class="nv">device_id       : </span><span class="nx">@mobileId</span>
+  <span class="nv">end_at          : </span><span class="nx">@trip</span><span class="p">.</span><span class="nx">updateTimeOfIgnitionOff</span> <span class="o">/</span> <span class="mi">1000</span>
+  <span class="nv">duration        : </span><span class="nx">@trip</span><span class="p">.</span><span class="nx">updateTimeOfIgnitionOff</span> <span class="o">-</span> <span class="nx">@trip</span><span class="p">.</span><span class="nx">updateTimeOfIgnitionOn</span>
+  <span class="nv">idle_seconds    : </span><span class="nx">@trip</span><span class="p">.</span><span class="nx">idleSeconds</span> <span class="o">?</span> <span class="mi">0</span>
+  <span class="nv">miles           : </span><span class="nx">@trip</span><span class="p">.</span><span class="nx">vOdometerAtIgnitionOff</span> <span class="o">-</span> <span class="nx">@trip</span><span class="p">.</span><span class="nx">vOdometerAtIgnitionOn</span>
+  <span class="nv">ending_mileage  : </span><span class="nx">@trip</span><span class="p">.</span><span class="nx">vOdometerAtIgnitionOff</span>
+  <span class="nv">highest_speed   : </span><span class="nx">@trip</span><span class="p">.</span><span class="nx">highestSpeed</span>
+  <span class="nv">start_date      : </span><span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="nx">@trip</span><span class="p">.</span><span class="nx">updateTimeOfIgnitionOn</span><span class="p">)</span>
+  <span class="nv">end_date        : </span><span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="nx">@trip</span><span class="p">.</span><span class="nx">updateTimeOfIgnitionOff</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="nv">readingSchema.methods.handleAlertsAndHistory = </span><span class="nf">-&gt;</span>
+  <span class="k">if</span> <span class="nx">@alertEventType</span>
+    <span class="nx">Alert</span><span class="p">.</span><span class="nx">create</span>
+      <span class="nv">event_type: </span><span class="nx">@alertEventType</span>
+      <span class="nv">device_id: </span><span class="nx">@mobileId</span>
+      <span class="nv">update_time: </span><span class="nx">@updateTime</span>
+      <span class="nv">trip_start_at: </span><span class="nx">@trip</span><span class="p">.</span><span class="nx">updateTimeOfIgnitionOn</span> <span class="o">/</span> <span class="mi">1000</span>
+      <span class="nv">latitude: </span><span class="nx">@latitude</span>
+      <span class="nv">longitude: </span><span class="nx">@longitude</span>
+  
+  <span class="k">if</span> <span class="nx">@vin</span> <span class="o">or</span> <span class="nx">@dtcCodes</span>
+    <span class="nx">DeviceHistory</span><span class="p">.</span><span class="nx">create</span>
+      <span class="nv">obd_vin: </span><span class="nx">@vin</span> <span class="o">?</span> <span class="kc">null</span>
+      <span class="nv">dtc_codes: </span><span class="nx">@dtcCodes</span> <span class="o">?</span> <span class="kc">null</span>
+      <span class="nv">device_id: </span><span class="nx">@mobileId</span>
+
+<span class="nv">readingSchema.methods.createTrip = </span><span class="nf">-&gt;</span>
+  <span class="nv">historicalTrip  = </span><span class="nx">@historicalTrip</span>
+  <span class="nv">mobileId        = </span><span class="nx">@mobileId</span>
+  <span class="nv">seqNumberRange =</span>
+    <span class="nv">$gt: </span><span class="nx">@trip</span><span class="p">.</span><span class="nx">seqNumberOfIgnitionOn</span>
+    <span class="nv">$lt: </span><span class="nx">@trip</span><span class="p">.</span><span class="nx">seqNumberOfIgnitionOff</span>
+ 
+  <span class="nx">@collection</span><span class="p">.</span><span class="nx">aggregate</span> <span class="p">{</span>
+    <span class="nv">$match: </span><span class="p">{</span> <span class="nx">mobileId</span><span class="o">:</span><span class="nx">mobileId</span><span class="p">,</span> <span class="nx">seqNumber</span><span class="o">:</span><span class="nx">seqNumberRange</span> <span class="p">}</span>
+  <span class="p">},</span> <span class="p">{</span>
+    <span class="nv">$group: </span><span class="p">{</span> <span class="nx">_id</span><span class="o">:</span><span class="s">&quot;$eventCode&quot;</span><span class="p">,</span> <span class="nv">num: </span><span class="p">{</span> <span class="s">&quot;$sum&quot;</span><span class="o">:</span><span class="mi">1</span> <span class="p">}</span> <span class="p">}</span>
+  <span class="p">},</span> <span class="nf">(err, results) =&gt;</span>
+      
+    <span class="nx">results</span><span class="p">.</span><span class="nx">forEach</span> <span class="nf">(result) -&gt;</span>
+      <span class="nx">historicalTrip</span><span class="p">[</span><span class="s">&quot;num_</span><span class="si">#{</span><span class="nx">eventCodes</span><span class="p">[</span><span class="nx">result</span><span class="p">.</span><span class="nx">_id</span><span class="p">]</span><span class="si">}</span><span class="s">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">result</span><span class="p">.</span><span class="nx">num</span>
+    
+    <span class="nv">historicalTrip = </span><span class="nx">_</span><span class="p">.</span><span class="nx">omit</span> <span class="nx">historicalTrip</span><span class="p">,</span> <span class="p">[</span><span class="s">&#39;num_heading&#39;</span><span class="p">,</span> <span class="s">&#39;num_time_with_ignition_on&#39;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">NODE_ENV</span> <span class="o">is</span> <span class="s">&#39;test&#39;</span>
+      <span class="nx">@emit</span> <span class="s">&#39;tripComplete&#39;</span><span class="p">,</span> <span class="nx">historicalTrip</span>
+      <span class="nx">setTimeout</span> <span class="o">=&gt;</span>
+        <span class="k">delete</span> <span class="nx">trips</span><span class="p">[</span><span class="nx">@mobileId</span><span class="p">]</span>
+      <span class="p">,</span> <span class="mi">13</span>
+
+    <span class="k">else</span>
+      <span class="nx">HistoricalTrip</span><span class="p">.</span><span class="nx">create</span> <span class="nx">historicalTrip</span><span class="p">,</span> <span class="nf">(err, ht) -&gt;</span>
+        <span class="k">delete</span> <span class="nx">trips</span><span class="p">[</span><span class="nx">@mobileId</span><span class="p">]</span>
+
+<span class="nv">readingSchema.methods.createTripIfAllSeqNumbersReceived = </span><span class="nf">-&gt;</span></pre></div>            </td>
+          </tr>
+                                      
+          <tr id="section-4" class="">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>ensure we've received both ignition<em>on and ignition</em>off</p>            </td>
+            <td class="code">
+              <div class="highlight"><pre>  <span class="k">if</span> <span class="nx">@trip</span><span class="p">.</span><span class="nx">seqNumberOfIgnitionOn</span> <span class="o">and</span> <span class="nx">@trip</span><span class="p">.</span><span class="nx">seqNumberOfIgnitionOff</span>
+    <span class="nv">totalSeqNumbers = </span><span class="p">[</span><span class="nx">@trip</span><span class="p">.</span><span class="nx">seqNumberOfIgnitionOn</span><span class="p">..</span><span class="nx">@trip</span><span class="p">.</span><span class="nx">seqNumberOfIgnitionOff</span><span class="p">].</span><span class="nx">length</span>
+
+    <span class="nx">@collection</span><span class="p">.</span><span class="nx">count</span>
+      <span class="nv">seqNumber:</span>
+        <span class="nv">$gte: </span><span class="nx">@trip</span><span class="p">.</span><span class="nx">seqNumberOfIgnitionOn</span>
+        <span class="nv">$lte: </span><span class="nx">@trip</span><span class="p">.</span><span class="nx">seqNumberOfIgnitionOff</span>
+    <span class="p">,</span> <span class="nf">(err, count) =&gt;</span></pre></div>            </td>
+          </tr>
+                                      
+          <tr id="section-5" class="">
+            <td class="docs">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>create trip if all sequence numbers received</p>            </td>
+            <td class="code">
+              <div class="highlight"><pre>        <span class="nx">@createTrip</span><span class="p">()</span> <span class="k">if</span> <span class="nx">count</span> <span class="o">==</span> <span class="nx">totalSeqNumbers</span>
+
+<span class="nx">readingSchema</span><span class="p">.</span><span class="nx">post</span> <span class="s">&#39;save&#39;</span><span class="p">,</span> <span class="nf">(reading) -&gt;</span>
+  <span class="k">if</span> <span class="nx">@event</span> <span class="o">is</span> <span class="s">&#39;ignition_on&#39;</span>
+    <span class="vi">@trip.seqNumberOfIgnitionOn   = </span><span class="nx">@seqNumber</span>
+    <span class="vi">@trip.updateTimeOfIgnitionOn  = </span><span class="nx">@updateTime</span>
+
+  <span class="k">if</span> <span class="nx">@ongoingTrip</span>
+    <span class="vi">@trip.highestSpeed = </span><span class="nb">Math</span><span class="p">.</span><span class="nx">max</span><span class="p">(</span><span class="nx">@speed</span><span class="p">,</span> <span class="nx">@trip</span><span class="p">.</span><span class="nx">highestSpeed</span><span class="p">)</span>
+  
+  <span class="k">if</span> <span class="nx">@event</span> <span class="o">is</span> <span class="s">&#39;ignition_off&#39;</span>
+    <span class="vi">@trip.seqNumberOfIgnitionOff  = </span><span class="nx">@seqNumber</span>
+    <span class="vi">@trip.updateTimeOfIgnitionOff = </span><span class="nx">@updateTime</span>
+
+  <span class="nx">@createTripIfAllSeqNumbersReceived</span><span class="p">()</span>
+
+
+<span class="nv">module.exports = </span><span class="nx">mongoose</span><span class="p">.</span><span class="nx">model</span> <span class="s">&#39;Reading&#39;</span><span class="p">,</span> <span class="nx">readingSchema</span>
+
+</pre></div>            </td>
+          </tr>
+              </tbody>
+    </table>
+
+    
+  </div>
+
+  <div id="sidebar">
+    <div class='header search'>
+      <input type='text' name='search' id='search-box' placeholder='Search...' />
+    </div>
+
+    <div class='header tabs'>
+      <button class='active' data-tab='pages'>Pages</button>
+      <button data-tab='files'>Files</button>
+    </div>
+
+    <div class='scroll-area'>
+      <!-- .multipage here means there will be a sidebar of many pages. -->
+      <div class='list pages multipage'>
+                  
+          <!-- Breadcrumbs -->
+                                  <ul class='breadcrumbs'>
+                              
+                <li class='page back'>
+                                  <a href='../index.html'>cowlamp-gateway</a>
+                                          </ul>
+          
+          <!-- The page and its headings -->
+          <ul class='current-page'>
+                        
+            <li class='page level-0'>
+              <a href='#'>Reading</a>
+                          </li>
+          </ul>
+
+          <ul class='reference'>
+
+            <!-- The reference page -->
+                          <li class='page has-children level-0'>
+                                  <a href='../index.html'>cowlamp-gateway</a>
+                              </li>
+            
+            <!-- Subpages of the ref -->
+                                                                                                                      
+                <li class='page  level-1'>
+
+                                                        <a href='../lib/ack.html' class=''>Ack</a>
+                  
+                                                    </li>
+                                                                                              
+                <li class='page  level-1'>
+
+                                                        <a href='../lib/decode-payload.html' class=''>Decode Payload</a>
+                  
+                                                    </li>
+                                                                                              
+                <li class='page  level-1'>
+
+                                                        <a href='../lib/msg-type-10.html' class=''>Message Type 10</a>
+                  
+                                                    </li>
+                                                                                              
+                <li class='page  level-1'>
+
+                                                        <a href='../lib/msg-type-2.html' class=''>Message Type 2</a>
+                  
+                                                    </li>
+                                                                                              
+                <li class='page  level-1'>
+
+                                                        <a href='../lib/msg-type-5.html' class=''>Message Type 5</a>
+                  
+                                                    </li>
+                                                                                              
+                <li class='page  level-1'>
+
+                                                        <a href='../models/geofence.html' class=''>Geofence</a>
+                  
+                                                    </li>
+                                                                                              
+                <li class='page  level-1'>
+
+                                                        <a href='../models/reading.html' class='active'>Reading</a>
+                  
+                                                    </li>
+                          
+          </ul>
+              </div>
+
+      <div class='list files hidden'>
+        
+        <ul>
+                  <li class='level-1'>
+                                                    <a href='../index.html#f' class='item file '>
+                <i></i>
+                README.md              </a>
+                      </li>
+                                    <li class='level-1'>
+                                                    <button class='item folder '>
+                <i></i>
+                lib              </button>
+              <ul class='hidden'>
+                          <li class='level-2'>
+                                                    <a href='../lib/ack.html#f' class='item file '>
+                <i></i>
+                ack.coffee              </a>
+                      </li>
+                                                    <li class='level-2'>
+                                                    <a href='../lib/common-2-and-5.html#f' class='item file '>
+                <i></i>
+                common-2-and-5.coffee              </a>
+                      </li>
+                                                    <li class='level-2'>
+                                                    <a href='../lib/db.html#f' class='item file '>
+                <i></i>
+                db.coffee              </a>
+                      </li>
+                                                    <li class='level-2'>
+                                                    <a href='../lib/decode-payload.html#f' class='item file '>
+                <i></i>
+                decode-payload.coffee              </a>
+                      </li>
+                                                    <li class='level-2'>
+                                                    <a href='../lib/event-codes.html#f' class='item file '>
+                <i></i>
+                event-codes.coffee              </a>
+                      </li>
+                                                    <li class='level-2'>
+                                                    <a href='../lib/main.html#f' class='item file '>
+                <i></i>
+                main.coffee              </a>
+                      </li>
+                                                    <li class='level-2'>
+                                                    <a href='../lib/msg-type-10.html#f' class='item file '>
+                <i></i>
+                msg-type-10.coffee              </a>
+                      </li>
+                                                    <li class='level-2'>
+                                                    <a href='../lib/msg-type-2.html#f' class='item file '>
+                <i></i>
+                msg-type-2.coffee              </a>
+                      </li>
+                                                    <li class='level-2'>
+                                                    <a href='../lib/msg-type-5.html#f' class='item file '>
+                <i></i>
+                msg-type-5.coffee              </a>
+                      </li>
+                                                        </ul>
+            </li>
+                      </li>
+                                    <li class='level-1'>
+                                                    <button class='item folder expanded'>
+                <i></i>
+                models              </button>
+              <ul class=''>
+                          <li class='level-2'>
+                                                    <a href='../models/alert.html#f' class='item file '>
+                <i></i>
+                alert.coffee              </a>
+                      </li>
+                                                    <li class='level-2'>
+                                                    <a href='../models/device-history.html#f' class='item file '>
+                <i></i>
+                device-history.coffee              </a>
+                      </li>
+                                                    <li class='level-2'>
+                                                    <a href='../models/geofence.html#f' class='item file '>
+                <i></i>
+                geofence.coffee              </a>
+                      </li>
+                                                    <li class='level-2'>
+                                                    <a href='../models/historical-trip.html#f' class='item file '>
+                <i></i>
+                historical-trip.coffee              </a>
+                      </li>
+                                                    <li class='level-2'>
+                                                    <a href='../models/reading-schema.html#f' class='item file '>
+                <i></i>
+                reading-schema.coffee              </a>
+                      </li>
+                                                    <li class='level-2'>
+                                                    <a href='../models/reading.html#f' class='item file active'>
+                <i></i>
+                reading.coffee              </a>
+                      </li>
+                                                        </ul>
+            </li>
+                      </li>
+                                  </ul>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script src='../script.js'></script>
+</body>
+</html>
