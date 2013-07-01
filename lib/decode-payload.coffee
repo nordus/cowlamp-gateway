@@ -3,6 +3,8 @@
 util = require 'util'
 ack = require './ack'
 Reading = require '../models/reading'
+Pusher = require 'pusher'
+pusherConfig = require "#{__dirname}/pusher-config.json"
 
 # parse functions for each message type
 parse =
@@ -26,6 +28,9 @@ module.exports = (msg, rinfo) ->
 
   # merge common and message specific attributes
   reading = new Reading(util._extend parsed, common)
+
+  pusher = new Pusher(pusherConfig)
+  pusher.trigger 'gateway', 'message', reading.toObject()
 
   # do not ack or save if in development
   if process.env.NODE_ENV is 'test'
