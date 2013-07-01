@@ -19,6 +19,7 @@ module.exports = (msg, rinfo) ->
     msgType:    msg.readUInt8 10
     seqNumber:  msg.readUInt16BE 11
     updateTime: (msg.readUInt32BE(13) * 1000)
+    rawPacket:  msg.toString('hex').toUpperCase().match(/\w{2}/g).join ' '
 
   # attributes specific to message type
   parsed = parse["#{common.msgType}"](msg)
