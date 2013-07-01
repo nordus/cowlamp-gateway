@@ -15,6 +15,8 @@ engineOn =
   '45': 'hard_corner_l'
   '46': 'corner_r'
   '47': 'hard_corner_r'
+  '50': 'enter_geo_zone'
+  '51': 'exit_geo_zone'
 
 engineOff =
   '30': 'ignition_off'
