@@ -20,10 +20,13 @@ module.exports = (msg) ->
 
     parsed.dtcCount = msg.readUInt8(54)
 
-    # split into 5 character DTC codes
-    #
-    #     P0100P0200
-    #     #=> 'P0100, 'P0200'
-    parsed.dtcCodes = "#{msg.slice(55)}".match(/[A-Z]\d{4}/g).join ', '
-  
+    # ensure DTC codes (ASCII values starting at offset 55) were received
+    if dtcCodes = "#{msg.slice(55)}"
+
+      # split into 5 character DTC codes
+      #
+      #     P0100P0200
+      #     #=> 'P0100', 'P0200'
+      parsed.dtcCodes = dtcCodes.match(/[A-Z]\d{4}/g).join ', '
+
   return parsed
