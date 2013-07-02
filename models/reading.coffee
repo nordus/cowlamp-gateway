@@ -96,15 +96,15 @@ readingSchema.methods.createTrip = ->
     
     historicalTrip = _.omit historicalTrip, ['num_heading', 'num_time_with_ignition_on']
 
-    if process.env.NODE_ENV is 'test'
-      @emit 'tripComplete', historicalTrip
-      setTimeout =>
-        delete trips[@mobileId]
-      , 13
+#    if process.env.NODE_ENV is 'test'
+    @emit 'tripComplete', historicalTrip
+    setTimeout =>
+      delete trips[@mobileId]
+    , 13
 
-    else
-      HistoricalTrip.create historicalTrip, (err, ht) ->
-        delete trips[@mobileId]
+#    else
+#      HistoricalTrip.create historicalTrip, (err, ht) ->
+#        delete trips[@mobileId]
 
 readingSchema.methods.createTripIfAllSeqNumbersReceived = ->
   # ensure we've received both ignition_on and ignition_off

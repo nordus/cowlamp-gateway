@@ -14,10 +14,11 @@ describe 'HistoricalTrip', ->
       asyncSpecDone()
 
     for packet in packets
-      payload = decodePayload(new Buffer(packet))
-      reading = new Reading(payload)
+#      payload = decodePayload(new Buffer(packet))
+      reading = decodePayload(new Buffer(packet))
+#      reading = new Reading(payload)
       reading.on 'tripComplete', tripComplete
-      reading.save()
+#      reading.save()
 
     asyncSpecWait()
 
