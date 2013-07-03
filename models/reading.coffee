@@ -5,7 +5,6 @@ eventCodes      = require('../lib/event-codes').eventCodes
 mongoose        = require('mongoose')
 readingSchema   = require('./reading-schema')
 _               = require('underscore')._
-HistoricalTrip  = require './historical-trip'
 
 readingSchema.index { "mobileId":1, "seqNumber":1 }, { unique:true, dropDups:true }
 readingSchema.index { "mobileId":1, "geo":"2dsphere" }

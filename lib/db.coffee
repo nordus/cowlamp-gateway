@@ -1,12 +1,4 @@
-Schema = require('jugglingdb').Schema
 mongoose = require 'mongoose'
-
-exports.postgresql = new Schema 'postgres',
-  database: 'locatemyautos_development'
-  username: 'locatemyautos'
-  host: 'danielnas.loginto.me'
-  port: 5432
-  password: 'n0rd3v'
 
 mongoIP = process.env.IP ? 'localhost'
 exports.mongoUrl = mongoUrl = switch process.env.NODE_ENV
