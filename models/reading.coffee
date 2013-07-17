@@ -6,7 +6,8 @@ mongoose        = require('mongoose')
 readingSchema   = require('./reading-schema')
 _               = require('underscore')._
 
-readingSchema.index { "mobileId":1, "seqNumber":1 }, { unique:true, dropDups:true }
+# when device is power cycled, or seqNumber hits 65535 it loops back to 0
+#readingSchema.index { "mobileId":1, "seqNumber":1 }, { unique:true, dropDups:true }
 readingSchema.index { "mobileId":1, "geo":"2dsphere" }
 
 readingSchema.virtual('latitude').set (v) ->
