@@ -30,7 +30,8 @@ module.exports = (msg, rinfo) ->
 
   logTrip = (trip) =>
     console.log trip
-    pusher.trigger 'gateway', 'tripComplete', trip
+    tripPusher = new Pusher(pusherConfig)
+    tripPusher.trigger 'gateway', 'tripComplete', trip
 
       # merge common and message specific attributes
   reading = new Reading(util._extend parsed, common)
