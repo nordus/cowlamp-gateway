@@ -24,6 +24,7 @@ trips = {}
 readingSchema.virtual('trip').get ->
   trips[@mobileId] ?=
     highestSpeed: 0
+    seqNumbersRcvd:[]
 
 readingSchema.virtual('idleSeconds').set (v) ->
   @trip.idleSeconds = v
@@ -62,6 +63,9 @@ readingSchema.virtual('historicalTrip').get -> {
   end_date        : new Date(@trip.updateTimeOfIgnitionOff)
 }
 
+readingSchema.methods.closeTrip = ->
+  delete trips[@mobileId]
+
 readingSchema.methods.handleAlertsAndHistory = ->
   if @alertEventType
     Alert.create
@@ -99,7 +103,7 @@ readingSchema.methods.createTrip = ->
 #    if process.env.NODE_ENV is 'test'
     @emit 'tripComplete', historicalTrip
     setTimeout =>
-      delete trips[@mobileId]
+      @closeTrip()
     , 13
 
 #    else
@@ -109,24 +113,47 @@ readingSchema.methods.createTrip = ->
 readingSchema.methods.createTripIfAllSeqNumbersReceived = ->
   # ensure we've received both ignition_on and ignition_off
   if @trip.seqNumberOfIgnitionOn and @trip.seqNumberOfIgnitionOff
-    totalSeqNumbers = [@trip.seqNumberOfIgnitionOn..@trip.seqNumberOfIgnitionOff].length
+#    totalSeqNumbers = [@trip.seqNumberOfIgnitionOn..@trip.seqNumberOfIgnitionOff].length
+    allSeqNumbers = [@trip.seqNumberOfIgnitionOn..@trip.seqNumberOfIgnitionOff]
 
-    @collection.count
-      seqNumber:
-        $gte: @trip.seqNumberOfIgnitionOn
-        $lte: @trip.seqNumberOfIgnitionOff
-    , (err, count) =>
+    # ensure we've received all sequence numbers
+    # example:
+    #
+    #   @trip.seqNumbersRcvd = [10, 11, 12]
+
+    #   seqNumberOfIgnitionOn = 10
+    #   seqNumberOfIgnitionOff = 12
+    #
+    #  allSeqNumbers = [seqNumberOfIgnitionOn..seqNumberOfIgnitionOff]
+    #   #=> [10, 11, 12]
+    #
+    #  _.difference(allSeqNumbers, seqNumbersRcvd)
+    #   #=> 0
+    unreceived = _.difference allSeqNumbers, @trip.seqNumbersRcvd
+
+    @createTrip()  if unreceived.length is 0
+
+#    @collection.count
+#      seqNumber:
+#        $gte: @trip.seqNumberOfIgnitionOn
+#        $lte: @trip.seqNumberOfIgnitionOff
+#    , (err, count) =>
 
         # create trip if all sequence numbers received
-        @createTrip() if count == totalSeqNumbers
+#        @createTrip() if count == totalSeqNumbers
 
 readingSchema.post 'save', (reading) ->
   if @event is 'ignition_on'
+
+    # close previous trip if needed
+    @closeTrip()  if @trip.seqNumbersRcvd.length
+
     @trip.seqNumberOfIgnitionOn   = @seqNumber
     @trip.updateTimeOfIgnitionOn  = @updateTime
 
   if @ongoingTrip
     @trip.highestSpeed = Math.max(@speed, @trip.highestSpeed)
+    @trip.seqNumbersRcvd.push @seqNumber
   
   if @event is 'ignition_off'
     @trip.seqNumberOfIgnitionOff  = @seqNumber
