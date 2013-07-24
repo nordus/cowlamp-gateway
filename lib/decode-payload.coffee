@@ -30,8 +30,10 @@ module.exports = (msg, rinfo) ->
   pusher = new Pusher(pusherConfig)
 
   logTrip = (trip) =>
-    console.log trip
-    createTrip trip
+    if process.env.NODE_ENV is 'test'
+      console.log trip
+    else
+      createTrip trip
 
       # merge common and message specific attributes
   reading = new Reading(util._extend parsed, common)
