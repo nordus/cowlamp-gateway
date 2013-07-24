@@ -5,6 +5,7 @@ ack = require './ack'
 Reading = require '../models/reading'
 Pusher = require 'pusher'
 pusherConfig = require "#{__dirname}/pusher-config.json"
+createTrip = require './create-trip'
 
 # parse functions for each message type
 parse =
@@ -30,6 +31,7 @@ module.exports = (msg, rinfo) ->
 
   logTrip = (trip) =>
     console.log trip
+    createTrip trip
 
       # merge common and message specific attributes
   reading = new Reading(util._extend parsed, common)
