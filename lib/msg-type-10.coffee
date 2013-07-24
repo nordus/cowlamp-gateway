@@ -16,5 +16,9 @@ module.exports = (msg) ->
   if parsed.eventCode is 26
     # millivolts to volts
     parsed.vBatt = (msg.readUInt32BE(33) * 0.001)
+
+  if parsed.eventCode in [50, 51]
+    parsed.geofenceId = msg.readUInt8(40)
+
   
   return parsed
