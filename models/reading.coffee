@@ -4,6 +4,7 @@ state           = require('../lib/event-codes').state
 eventCodes      = require('../lib/event-codes').eventCodes
 mongoose        = require('mongoose')
 readingSchema   = require('./reading-schema')
+createGeofenceViolation = require '../lib/create-geofence-violation'
 _               = require('underscore')._
 
 # when device is power cycled, or seqNumber hits 65535 it loops back to 0
@@ -158,6 +159,9 @@ readingSchema.post 'save', (reading) ->
   if @event is 'ignition_off'
     @trip.seqNumberOfIgnitionOff  = @seqNumber
     @trip.updateTimeOfIgnitionOff = @updateTime
+
+  if @event is 'exit_geo_zone'
+    createGeofenceViolation @, @trip
 
   @createTripIfAllSeqNumbersReceived()
 
