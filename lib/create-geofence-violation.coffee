@@ -2,11 +2,11 @@ request = require 'request'
 _ = require('underscore')._
 
 
-module.exports = (reading, trip) ->
+module.exports = (mobileId, geofenceId, tripStartAt) ->
   geofence_violation =
-    trip_start_at : trip.updateTimeOfIgnitionOn ? (new Date().getTime())
-    device_id     : reading.mobileId
-    geofence_id   : reading.geofenceId
+    trip_start_at : tripStartAt ? (new Date().getTime())
+    device_id     : mobileId
+    geofence_id   : geofenceId
 
   console.log '\n\n geofence_violation:'
   console.log geofence_violation

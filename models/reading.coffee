@@ -161,7 +161,7 @@ readingSchema.post 'save', (reading) ->
     @trip.updateTimeOfIgnitionOff = @updateTime
 
   if @event is 'exit_geo_zone'
-    createGeofenceViolation @, @trip
+    createGeofenceViolation @mobileId, @geofenceId, @trip.updateTimeOfIgnitionOn
 
   @createTripIfAllSeqNumbersReceived()
 
