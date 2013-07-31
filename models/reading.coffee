@@ -5,6 +5,7 @@ eventCodes      = require('../lib/event-codes').eventCodes
 mongoose        = require('mongoose')
 readingSchema   = require('./reading-schema')
 createGeofenceViolation = require '../lib/create-geofence-violation'
+createAlert = require '../lib/create-alert'
 _               = require('underscore')._
 
 # when device is power cycled, or seqNumber hits 65535 it loops back to 0
@@ -42,14 +43,24 @@ readingSchema.virtual('event').get ->
 readingSchema.virtual('ongoingTrip').get ->
   Boolean @trip.seqNumberOfIgnitionOn
 
-readingSchema.virtual('alertEventType').get -> switch
-  # 1 - Battery Low
-  when @event is 'heartbeat' && @state is 'engineOff' && @vBatt < 12.5 then 1
+readingSchema.virtual('alertEventType').get ->
+  console.log '.. checking alertEventType'
 
-  # 3 - Engine Lights ON
-  when @dtcCodes or @event is 'mil_on' then 3
-  
-  else undefined
+  eventCode = switch
+    # 1 - Battery Low
+    when @event is 'heartbeat' && @vBatt < 12.5 then 1
+
+    # 3 - Engine Lights ON
+    when @dtcCodes then 3
+
+    else undefined
+
+#  console.log 'eventCode: ', eventCode
+
+  if @dtcCodes
+    console.log 'dtcCodes: ', @dtcCodes
+
+  return eventCode
 
 readingSchema.virtual('historicalTrip').get -> {
   start_at        : @trip.updateTimeOfIgnitionOn / 1000
@@ -162,6 +173,10 @@ readingSchema.post 'save', (reading) ->
 
   if @event is 'exit_geo_zone'
     createGeofenceViolation @mobileId, @geofenceId, @trip.updateTimeOfIgnitionOn
+
+  if @alertEventType
+    console.log '.. alert event type'
+    createAlert @mobileId, @alertEventType, @trip.updateTimeOfIgnitionOn
 
   @createTripIfAllSeqNumbersReceived()
 

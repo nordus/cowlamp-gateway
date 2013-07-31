@@ -15,6 +15,7 @@ module.exports = new Schema
   seqNumber: Number
   mobileId: String
   geofenceId: Number
+  dtcCodes: String
   geo:
     type:
       type: String
