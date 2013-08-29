@@ -11,4 +11,4 @@ module.exports = (reading) ->
     reading.emit 'createDeviceHistory', deviceHistory
     request.post 'http://localhost:3000/device_histories', {form: device_history:deviceHistory}
   else
-    request.post 'http://admin.zinmatics.com/device_histories', {form: device_history:deviceHistory}
+    request.post 'http://zinlot.com/device_histories', {form: device_history:deviceHistory}

@@ -1,5 +1,4 @@
 request = require 'request'
-_ = require('underscore')._
 
 
 module.exports = (mobileId, geofenceId, tripStartAt) ->
@@ -11,4 +10,4 @@ module.exports = (mobileId, geofenceId, tripStartAt) ->
     device_id     : mobileId
     geofence_id   : geofenceId
 
-  request.post 'http://admin.zinmatics.com/geofence_violations', {form: geofence_violation:geofence_violation}
+  request.post 'http://zinlot.com/geofence_violations', {form: geofence_violation:geofence_violation}
