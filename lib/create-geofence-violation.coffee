@@ -10,4 +10,4 @@ module.exports = (mobileId, geofenceId, tripStartAt) ->
     device_id     : mobileId
     geofence_id   : geofenceId
 
-  request.post 'http://zinlot.com/geofence_violations', {form: geofence_violation:geofence_violation}
+  request.post 'http://app.zinlot.com/geofence_violations', {form: geofence_violation:geofence_violation}
