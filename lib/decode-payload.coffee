@@ -33,6 +33,7 @@ module.exports = (msg, rinfo) ->
     if process.env.NODE_ENV is 'test'
       console.log trip
     else
+      pusher.trigger 'gateway', 'message', trip
       createTrip trip
 
       # merge common and message specific attributes
