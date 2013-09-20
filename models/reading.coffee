@@ -7,6 +7,8 @@ readingSchema   = require('./reading-schema')
 createGeofenceViolation = require '../lib/create-geofence-violation'
 createDeviceHistory = require '../lib/create-device-history'
 _               = require('underscore')._
+Pusher = require 'pusher'
+pusherConfig = require "../lib/pusher-config.json"
 
 # when device is power cycled, or seqNumber hits 65535 it loops back to 0
 #readingSchema.index { "mobileId":1, "seqNumber":1 }, { unique:true, dropDups:true }
@@ -76,6 +78,12 @@ readingSchema.methods.createTrip = ->
       historicalTrip["num_#{eventCodes[result._id]}"] = result.num
 
     historicalTrip = _.omit historicalTrip, ['num_heading', 'num_time_with_ignition_on']
+
+    pusher = new Pusher(pusherConfig)
+    pusher.trigger 'gateway', 'message', historicalTrip
+
+    console.log '.. PUSHING TRIP TO PUSHER'
+    console.log historicalTrip
 
     #    if process.env.NODE_ENV is 'test'
     @emit 'tripComplete', historicalTrip
