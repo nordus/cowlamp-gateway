@@ -145,10 +145,10 @@ readingSchema.post 'save', (reading) ->
     @trip.updateTimeOfIgnitionOff = @updateTime
 
   if @event is 'exit_geo_zone'
-    createGeofenceViolation 'EXIT_GEOFENCE', @mobileId, @geofenceId, @trip.updateTimeOfIgnitionOn, @updateTime
+    createGeofenceViolation 'GEOFENCE_EXIT', @mobileId, @geofenceId, @trip.updateTimeOfIgnitionOn, @updateTime
 
   if @event is 'enter_geo_zone'
-    createGeofenceViolation 'ENTER_GEOFENCE', @mobileId, @geofenceId, @trip.updateTimeOfIgnitionOn, @updateTime
+    createGeofenceViolation 'GEOFENCE_ENTER', @mobileId, @geofenceId, @trip.updateTimeOfIgnitionOn, @updateTime
 
   if @event is 'heartbeat'
     createDeviceHistory(reading)
