@@ -6,6 +6,7 @@ mongoose        = require('mongoose')
 readingSchema   = require('./reading-schema')
 createGeofenceViolation = require '../lib/create-geofence-violation'
 createDeviceHistory = require '../lib/create-device-history'
+createAlert     = require '../lib/create-alert'
 _               = require('underscore')._
 Pusher = require 'pusher'
 pusherConfig = require "../lib/pusher-config.json"
@@ -139,6 +140,9 @@ readingSchema.post 'save', (reading) ->
   if @ongoingTrip
     @trip.highestSpeed = Math.max(@speed, @trip.highestSpeed)
     @trip.seqNumbersRcvd.push @seqNumber
+
+  if @event is 'ignition_on'
+    createAlert 'IGNITION_ON', @mobileId, @updateTime
 
   if @event is 'ignition_off'
     @trip.seqNumberOfIgnitionOff  = @seqNumber
