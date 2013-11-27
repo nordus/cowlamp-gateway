@@ -1,0 +1,28 @@
+{
+  "name": "homeclub-gateway",
+  "version": "0.0.1",
+  "description": "Decode/ack/persist messages from sensor devices/hubs",
+  "main": "server.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "./bin/test",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/nordus/homeclub-gateway.git"
+  },
+  "author": "Nordus Tech",
+  "license": "BSD",
+  "dependencies": {
+    "coffee-script": "~1.6.3",
+    "lodash": "~2.3.0",
+    "request": "~2.27.0"
+  },
+  "devDependencies": {
+    "node-dev": "~2.0.1",
+    "lidoc": "*"
+  }
+}
